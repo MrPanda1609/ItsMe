@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react';
+import { Button } from '../../../components/ui/button';
+import { setMockAuthenticated } from '../../auth/mockAuth';
 import { builderSelectors, useBuilderStore } from '../store/useBuilderStore';
 import { useIsDesktopEditor } from '../hooks/useIsDesktopEditor';
 
@@ -39,6 +41,15 @@ export function EditorLayout({ controls, preview }: EditorLayoutProps) {
   const userStatus = useBuilderStore(builderSelectors.userStatus);
   const hasProAccess = useBuilderStore(builderSelectors.hasProAccess);
 
+  const handleGoHome = () => {
+    window.location.assign('/');
+  };
+
+  const handleLogout = () => {
+    setMockAuthenticated(false);
+    window.location.assign('/login');
+  };
+
   return (
     <div className="relative h-screen w-full overflow-hidden bg-gray-50 text-slate-900">
       {!isDesktop && <DesktopOnlyOverlay />}
@@ -53,17 +64,34 @@ export function EditorLayout({ controls, preview }: EditorLayoutProps) {
                 <p className="mt-2 text-sm leading-6 text-slate-500">Builder view đã chuyển sang light mode, ưu tiên cảm giác consumer product cho creator.</p>
               </div>
 
-              <div className="flex flex-col items-end gap-2 text-xs">
-                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-slate-700">
-                  {userStatus.isAdmin ? 'Admin' : 'User'}
-                </span>
-                <span
-                  className={`rounded-full px-3 py-1 ${
-                    hasProAccess ? 'border border-rose-200 bg-rose-50 text-rose-700' : 'border border-gray-200 bg-gray-50 text-slate-700'
-                  }`}
-                >
-                  {hasProAccess ? 'Pro access enabled' : 'Free access'}
-                </span>
+              <div className="flex flex-col items-end gap-3 text-xs">
+                <div className="flex items-center gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={handleGoHome}>
+                    Về trang chủ
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    className="text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                  >
+                    Đăng xuất
+                  </Button>
+                </div>
+
+                <div className="flex flex-col items-end gap-2">
+                  <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-slate-700">
+                    {userStatus.isAdmin ? 'Admin' : 'User'}
+                  </span>
+                  <span
+                    className={`rounded-full px-3 py-1 ${
+                      hasProAccess ? 'border border-rose-200 bg-rose-50 text-rose-700' : 'border border-gray-200 bg-gray-50 text-slate-700'
+                    }`}
+                  >
+                    {hasProAccess ? 'Pro access enabled' : 'Free access'}
+                  </span>
+                </div>
               </div>
             </div>
           </header>

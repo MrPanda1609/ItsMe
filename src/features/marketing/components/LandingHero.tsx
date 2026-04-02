@@ -150,126 +150,120 @@ function FloatingWidget({
 
 function PhoneMockup({ mode }: { mode: 'dark' | 'light' }) {
   return (
-    <motion.div
-      animate={{ y: [0, -15, 0] }}
-      transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-      className={`relative h-[650px] w-[320px] overflow-hidden rounded-[3rem] border-[14px] border-black shadow-[0_40px_120px_rgba(15,23,42,0.22)] ${
-        mode === 'dark' ? 'bg-[#0a0810]' : 'bg-white'
-      }`}
-    >
-      <div className="absolute left-1/2 top-2 z-30 h-7 w-32 -translate-x-1/2 rounded-full bg-black" />
+    <div className="relative w-[320px] h-[650px] mx-auto z-10">
+      <div className="absolute inset-0 bg-rose-500/0 dark:bg-rose-500/20 blur-[70px] rounded-[3rem] -z-10 transition-colors duration-500"></div>
 
-      <div className="hidden-scrollbar h-full overflow-y-auto">
-        <div
-          className={`relative min-h-full pt-11 ${
-            mode === 'dark'
-              ? 'bg-[linear-gradient(180deg,#161217_0%,#110f12_34%,#0a0a0a_100%)]'
-              : 'bg-[linear-gradient(180deg,#fff8fa_0%,#fffafb_40%,#ffffff_100%)]'
-          }`}
-        >
-          <div className="relative h-[300px] overflow-hidden">
-            <ImageWithFallback src={CREATOR_IMAGE_SRC} alt="Creator cover" className="block h-full w-full object-cover object-top" />
-            <div className={`absolute inset-0 ${mode === 'dark' ? 'bg-[linear-gradient(180deg,rgba(10,10,10,0.08),rgba(10,10,10,0.12))]' : 'bg-[linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,0.02))]'}`} />
-            <div className={`absolute inset-x-0 bottom-0 h-44 ${mode === 'dark' ? 'bg-gradient-to-t from-[#161217] via-[#161217]/88 to-transparent' : 'bg-gradient-to-t from-[#fff8fa] via-[#fff8fa]/92 to-transparent'}`} />
-          </div>
+      <div className="w-full h-full border-[14px] border-gray-900 dark:border-[#2a2a2a] bg-white dark:bg-black rounded-[3rem] shadow-2xl ring-1 ring-gray-900/5 dark:ring-white/10 relative overflow-hidden transition-colors duration-300">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120px] h-[28px] bg-gray-900 dark:bg-[#111] rounded-b-3xl z-50 shadow-sm border-b border-x border-transparent dark:border-white/5 transition-colors duration-300"></div>
 
-          <div className="relative -mt-12 px-4 pb-6">
-            <div
-              className={`mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-4 shadow-lg ${
-                mode === 'dark'
-                  ? 'border-[#161217] bg-[#1d191d] shadow-black/40'
-                  : 'border-white bg-white shadow-rose-100/70'
-              }`}
-            >
-              <ImageWithFallback src={CREATOR_IMAGE_SRC} alt="Creator avatar" className="block h-full w-full object-cover object-top" />
-            </div>
-
-            <div className="mt-4 flex items-center justify-center gap-2">
-              <h2 className={`text-[2rem] font-bold tracking-[-0.04em] ${mode === 'dark' ? 'text-white' : 'text-gray-900'}`}>Ngianggg</h2>
-              <HeartIcon />
-            </div>
-
-            <p className={`mt-3 text-center text-[15px] leading-7 ${mode === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-              Chuyên làm review, unboxing
-              <br />
-              Những sp tui review đều ở bên dưới nha
-            </p>
-
-            <div className="mt-5 flex justify-center">
-              <div
-                className={`flex h-12 w-12 items-center justify-center rounded-full border text-rose-500 shadow-md ${
-                  mode === 'dark'
-                    ? 'border-white/10 bg-white/10 shadow-black/30'
-                    : 'border-rose-100 bg-white shadow-rose-100/60'
-                }`}
-              >
-                <SocialIcon />
+        <div className="w-full h-full overflow-y-auto hidden-scrollbar bg-gradient-to-b from-rose-50 to-white dark:from-gray-900 dark:to-black">
+          <div className="pt-12 pb-10 px-4 flex flex-col items-center">
+            <div className="w-full">
+              <div className="relative -mx-4 -mt-12 h-[300px] overflow-hidden">
+                <ImageWithFallback src={CREATOR_IMAGE_SRC} alt="Creator cover" className="block h-full w-full object-cover object-top" />
+                <div className={`absolute inset-0 ${mode === 'dark' ? 'bg-[linear-gradient(180deg,rgba(10,10,10,0.08),rgba(10,10,10,0.12))]' : 'bg-[linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,0.02))]'}`} />
+                <div className={`absolute inset-x-0 bottom-0 h-44 ${mode === 'dark' ? 'bg-gradient-to-t from-[#161217] via-[#161217]/88 to-transparent' : 'bg-gradient-to-t from-[#fff8fa] via-[#fff8fa]/92 to-transparent'}`} />
               </div>
-            </div>
 
-            <div className="mt-6 flex justify-center">
-              <span
-                className={`inline-flex rounded-full px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.26em] ${
-                  mode === 'dark'
-                    ? 'border border-white/10 bg-white/10 text-rose-200'
-                    : 'border border-rose-100 bg-white text-rose-500'
-                }`}
-              >
-                Các bạn hãy tham khảo
-              </span>
-            </div>
-
-            <h3 className={`mt-4 text-center text-[2rem] font-bold tracking-[-0.04em] ${mode === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Sản phẩm yêu thích của mình nhé!
-            </h3>
-
-            <div className="mt-6 space-y-4">
-              {mockLinks.map((link) => (
-                <button
-                  key={link}
-                  type="button"
-                  className={`flex w-full items-center justify-between rounded-[1.75rem] px-5 py-4 text-left ${
-                    mode === 'dark'
-                      ? 'bg-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.28)]'
-                      : 'bg-white shadow-[0_18px_40px_rgba(244,63,94,0.1)]'
-                  }`}
-                >
-                  <span className={`text-sm font-semibold ${mode === 'dark' ? 'text-white' : 'text-gray-800'}`}>{link}</span>
-                  <span className={`flex h-10 w-10 items-center justify-center rounded-full text-rose-500 ${mode === 'dark' ? 'bg-white/10' : 'bg-rose-50'}`}>
-                    <ArrowIcon />
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-5 space-y-4">
-              {mockProducts.map((product) => (
+              <div className="relative -mt-12 pb-6">
                 <div
-                  key={product.name}
-                  className={`flex items-center gap-4 rounded-[1.75rem] p-4 ${
+                  className={`mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-4 shadow-lg ${
                     mode === 'dark'
-                      ? 'bg-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.28)]'
-                      : 'bg-white shadow-[0_18px_40px_rgba(244,63,94,0.1)]'
+                      ? 'border-[#161217] bg-[#1d191d] shadow-black/40'
+                      : 'border-white bg-white shadow-rose-100/70'
                   }`}
                 >
-                  <img src={product.image} alt={product.name} className="h-24 w-24 rounded-[1.25rem] object-cover" />
+                  <ImageWithFallback src={CREATOR_IMAGE_SRC} alt="Creator avatar" className="block h-full w-full object-cover object-top" />
+                </div>
 
-                  <div className="min-w-0 flex-1 text-left">
-                    <p className={`line-clamp-2 text-base font-semibold leading-6 ${mode === 'dark' ? 'text-white' : 'text-gray-900'}`}>{product.name}</p>
-                  </div>
+                <div className="mt-4 flex items-center justify-center gap-2">
+                  <h2 className={`text-[2rem] font-bold tracking-[-0.04em] ${mode === 'dark' ? 'text-white' : 'text-gray-900'}`}>Ngianggg</h2>
+                  <HeartIcon />
+                </div>
 
-                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-rose-500 ${mode === 'dark' ? 'bg-white/10' : 'bg-rose-50'}`}>
-                    <ArrowIcon />
+                <p className={`mt-3 text-center text-[15px] leading-7 ${mode === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Chuyên làm review, unboxing
+                  <br />
+                  Những sp tui review đều ở bên dưới nha
+                </p>
+
+                <div className="mt-5 flex justify-center">
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full border text-rose-500 shadow-md ${
+                      mode === 'dark'
+                        ? 'border-white/10 bg-white/10 shadow-black/30'
+                        : 'border-rose-100 bg-white shadow-rose-100/60'
+                    }`}
+                  >
+                    <SocialIcon />
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <div className="h-4" />
+                <div className="mt-6 flex justify-center">
+                  <span
+                    className={`inline-flex rounded-full px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.26em] ${
+                      mode === 'dark'
+                        ? 'border border-white/10 bg-white/10 text-rose-200'
+                        : 'border border-rose-100 bg-white text-rose-500'
+                    }`}
+                  >
+                    Các bạn hãy tham khảo
+                  </span>
+                </div>
+
+                <h3 className={`mt-4 text-center text-[2rem] font-bold tracking-[-0.04em] ${mode === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Sản phẩm yêu thích của mình nhé!
+                </h3>
+
+                <div className="mt-6 space-y-4">
+                  {mockLinks.map((link) => (
+                    <button
+                      key={link}
+                      type="button"
+                      className={`flex w-full items-center justify-between rounded-[1.75rem] px-5 py-4 text-left ${
+                        mode === 'dark'
+                          ? 'bg-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.28)]'
+                          : 'bg-white shadow-[0_18px_40px_rgba(244,63,94,0.1)]'
+                      }`}
+                    >
+                      <span className={`text-sm font-semibold ${mode === 'dark' ? 'text-white' : 'text-gray-800'}`}>{link}</span>
+                      <span className={`flex h-10 w-10 items-center justify-center rounded-full text-rose-500 ${mode === 'dark' ? 'bg-white/10' : 'bg-rose-50'}`}>
+                        <ArrowIcon />
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-5 space-y-4">
+                  {mockProducts.map((product) => (
+                    <div
+                      key={product.name}
+                      className={`flex items-center gap-4 rounded-[1.75rem] p-4 ${
+                        mode === 'dark'
+                          ? 'bg-white/10 shadow-[0_18px_40px_rgba(0,0,0,0.28)]'
+                          : 'bg-white shadow-[0_18px_40px_rgba(244,63,94,0.1)]'
+                      }`}
+                    >
+                      <img src={product.image} alt={product.name} className="h-24 w-24 rounded-[1.25rem] object-cover" />
+
+                      <div className="min-w-0 flex-1 text-left">
+                        <p className={`line-clamp-2 text-base font-semibold leading-6 ${mode === 'dark' ? 'text-white' : 'text-gray-900'}`}>{product.name}</p>
+                      </div>
+
+                      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-rose-500 ${mode === 'dark' ? 'bg-white/10' : 'bg-rose-50'}`}>
+                        <ArrowIcon />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="h-4" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 

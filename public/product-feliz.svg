@@ -1,0 +1,28 @@
+<svg width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="320" rx="28" fill="#EAF4FF"/>
+  <rect x="18" y="18" width="284" height="284" rx="22" fill="url(#paint0_linear_1_2)"/>
+  <text x="26" y="52" fill="#9DB7E7" font-family="Arial, sans-serif" font-size="26" font-weight="700" opacity="0.95">FELIZ 2025</text>
+  <text x="28" y="94" fill="#223A61" font-family="Arial, sans-serif" font-size="11" font-weight="700">FELIZ2025</text>
+  <text x="28" y="111" fill="#4C6A93" font-family="Arial, sans-serif" font-size="9" font-weight="700">Pin QLĐG DUNG</text>
+  <text x="28" y="136" fill="#D74F4F" font-family="Arial, sans-serif" font-size="10" font-weight="700">70 KM/H</text>
+  <text x="28" y="152" fill="#4C6A93" font-family="Arial, sans-serif" font-size="9" font-weight="700">TỐC ĐỘ TỐI ĐA</text>
+  <text x="28" y="178" fill="#D74F4F" font-family="Arial, sans-serif" font-size="10" font-weight="700">NĂM PIN NĂM</text>
+  <text x="28" y="194" fill="#4C6A93" font-family="Arial, sans-serif" font-size="9" font-weight="700">BẢO HÀNH</text>
+  <circle cx="173" cy="227" r="28" fill="#28323D"/>
+  <circle cx="260" cy="227" r="28" fill="#28323D"/>
+  <circle cx="173" cy="227" r="15" fill="#DCE5EA"/>
+  <circle cx="260" cy="227" r="15" fill="#DCE5EA"/>
+  <path d="M157 196H237C250 196 261 205 264 218L268 234H187L157 196Z" fill="#EFF5F0" stroke="#A3B2A7" stroke-width="3"/>
+  <path d="M190 154H224C233 154 240 160 243 168L248 183H196L190 154Z" fill="#F9FCFA" stroke="#A3B2A7" stroke-width="3"/>
+  <path d="M160 195L176 159C179 153 185 149 191 149H195L207 196H160Z" fill="#F9FCFA" stroke="#A3B2A7" stroke-width="3"/>
+  <path d="M223 149L245 132" stroke="#5F6E78" stroke-width="5" stroke-linecap="round"/>
+  <path d="M240 132H264" stroke="#5F6E78" stroke-width="5" stroke-linecap="round"/>
+  <path d="M170 168L148 182" stroke="#5F6E78" stroke-width="5" stroke-linecap="round"/>
+  <rect x="203" y="141" width="26" height="9" rx="4.5" fill="#2B3139"/>
+  <defs>
+    <linearGradient id="paint0_linear_1_2" x1="18" y1="18" x2="302" y2="302" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E8F4FF"/>
+      <stop offset="1" stop-color="#F9FBFF"/>
+    </linearGradient>
+  </defs>
+</svg>
