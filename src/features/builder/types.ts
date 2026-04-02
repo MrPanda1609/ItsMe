@@ -5,9 +5,12 @@ export interface ThemePreset {
   name: string;
   isPro: boolean;
   background: string;
+  backgroundColor: string;
   surface: string;
+  surfaceColor: string;
   borderColor: string;
   textColor: string;
+  mutedTextColor: string;
   accentColor: string;
 }
 
@@ -62,10 +65,37 @@ export interface BuilderProductItem extends BaseBuilderItem {
 
 export type BuilderItem = BuilderLinkItem | BuilderProductItem;
 
+export interface SocialLinks {
+  facebook: string;
+  instagram: string;
+  tiktok: string;
+  zalo: string;
+}
+
 export interface ProfileData {
   avatar: string | null;
+  coverImage: string | null;
+  coverImagePositionX: number;
+  coverImagePositionY: number;
+  socialLinks: SocialLinks;
   displayName: string;
   bio: string;
+  sectionBadge: string;
+  sectionTitle: string;
+  backgroundColor: string;
+  surfaceColor: string;
+  accentColor: string;
+  sectionBadgeColor: string;
+  nameColor: string;
+  bioColor: string;
+  sectionTitleColor: string;
+  cardTitleColor: string;
+  mutedTextColor: string;
+  sectionBadgeSize: number;
+  displayNameSize: number;
+  bioSize: number;
+  sectionTitleSize: number;
+  cardTitleSize: number;
   links: BuilderItem[];
   selectedTheme: ThemePreset;
   selectedFont: FontPreset;

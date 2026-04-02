@@ -6,7 +6,7 @@ import { Input } from '../../../components/ui/input';
 import { Switch } from '../../../components/ui/switch';
 import { cn } from '../../../lib/cn';
 import type { BuilderItem, BuilderProductItem } from '../types';
-import { useBuilderStore } from '../store/useBuilderStore';
+import { builderSelectors, useBuilderStore } from '../store/useBuilderStore';
 import { BuilderPanelSection } from './BuilderPanelSection';
 import { ImageUploadField } from './ImageUploadField';
 
@@ -27,16 +27,16 @@ function SortableBuilderItemCard({ item }: { item: BuilderItem }) {
       ref={setNodeRef}
       style={style}
       className={cn(
-        'rounded-[28px] border border-gray-200 bg-white p-5 shadow-sm transition',
-        isDragging && 'border-rose-200 shadow-md shadow-rose-100/70',
+        'rounded-[28px] border border-gray-200 bg-white p-5 shadow-sm transition dark:border-white/10 dark:bg-[#111111]',
+        isDragging && 'border-rose-200 shadow-md shadow-rose-100/70 dark:border-rose-400/30 dark:shadow-none',
       )}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <button
             type="button"
-            className="inline-flex h-11 w-11 cursor-grab items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-lg text-slate-500"
-            aria-label={`Drag ${item.title}`}
+            className="inline-flex h-11 w-11 cursor-grab items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-lg text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300"
+            aria-label={`Kéo ${item.title}`}
             {...attributes}
             {...listeners}
           >
@@ -45,29 +45,27 @@ function SortableBuilderItemCard({ item }: { item: BuilderItem }) {
 
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-sm font-semibold text-slate-900">{item.type === 'product' ? 'Product card' : 'Link card'}</p>
-              <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[10px] uppercase tracking-[0.25em] text-slate-600">
-                {item.type}
+              <p className="text-sm font-semibold text-slate-900 dark:text-white">{item.type === 'product' ? 'Thẻ sản phẩm' : 'Thẻ liên kết'}</p>
+              <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-[10px] uppercase tracking-[0.25em] text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300">
+                {item.type === 'product' ? 'Sản phẩm' : 'Liên kết'}
               </span>
             </div>
-            <p className="mt-1 text-xs leading-5 text-slate-500">Drag to reorder in the final profile stack.</p>
+            <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Kéo để đổi thứ tự hiển thị trong profile cuối cùng.</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500">Visible</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">Hiển thị</span>
             <Switch checked={item.enabled} onCheckedChange={(checked) => updateLink(item.id, { enabled: checked })} />
           </div>
-          <Button variant="ghost" size="sm" onClick={() => removeLink(item.id)}>
-            Remove
+          <Button variant="ghost" size="sm" className="dark:text-rose-300 dark:hover:bg-rose-500/10 dark:hover:text-rose-200" onClick={() => removeLink(item.id)}>
+            Xóa
           </Button>
         </div>
       </div>
 
-      <div className="mt-5 space-y-4">
-        {isProductItem(item) ? <ProductCardInput item={item} /> : <LinkCardInput item={item} />}
-      </div>
+      <div className="mt-5 space-y-4">{isProductItem(item) ? <ProductCardInput item={item} /> : <LinkCardInput item={item} />}</div>
     </div>
   );
 }
@@ -78,25 +76,36 @@ function LinkCardInput({ item }: { item: BuilderItem }) {
   return (
     <div className="grid gap-4">
       <div className="space-y-2">
-        <label htmlFor={`title-${item.id}`} className="text-sm font-medium text-slate-700">
-          Link Title
+        <label htmlFor={`title-${item.id}`} className="text-sm font-medium text-slate-700 dark:text-slate-200">
+          Tiêu đề link
         </label>
         <Input
           id={`title-${item.id}`}
           value={item.title}
-          placeholder="Shop my latest picks"
+          placeholder="Ví dụ: Đặt lịch hợp tác"
+          className="dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-slate-500"
           onChange={(event) => updateLink(item.id, { title: event.target.value })}
         />
       </div>
 
+      <ImageUploadField
+        label="Ảnh thumbnail"
+        hint="Tuỳ chọn. Nếu không có ảnh, hệ thống sẽ dùng chấm màu nhấn để giữ bố cục gọn gàng."
+        value={item.type === 'link' ? item.thumbnail : null}
+        onChange={(value) => updateLink(item.id, { thumbnail: value })}
+        placeholder="Thumbnail link"
+        imageClassName="rounded-[20px]"
+      />
+
       <div className="space-y-2">
-        <label htmlFor={`url-${item.id}`} className="text-sm font-medium text-slate-700">
-          URL
+        <label htmlFor={`url-${item.id}`} className="text-sm font-medium text-slate-700 dark:text-slate-200">
+          Đường dẫn
         </label>
         <Input
           id={`url-${item.id}`}
           value={item.url}
           placeholder="https://"
+          className="dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-slate-500"
           onChange={(event) => updateLink(item.id, { url: event.target.value })}
         />
       </div>
@@ -108,62 +117,38 @@ function ProductCardInput({ item }: { item: BuilderProductItem }) {
   const updateLink = useBuilderStore((state) => state.updateLink);
 
   return (
-    <div className="grid gap-4">
-      <div className="space-y-2">
-        <label htmlFor={`product-title-${item.id}`} className="text-sm font-medium text-slate-700">
-          Product Title
+      <div className="grid gap-4">
+        <div className="space-y-2">
+          <label htmlFor={`product-title-${item.id}`} className="text-sm font-medium text-slate-700 dark:text-slate-200">
+            Tên sản phẩm
         </label>
         <Input
           id={`product-title-${item.id}`}
           value={item.title}
-          placeholder="Lip tint spotlight"
+          placeholder="Ví dụ: Xe máy điện VinFast Feliz 2025"
+          className="dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-slate-500"
           onChange={(event) => updateLink(item.id, { title: event.target.value })}
         />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2">
-          <label htmlFor={`vendor-${item.id}`} className="text-sm font-medium text-slate-700">
-            Vendor
-          </label>
-          <Input
-            id={`vendor-${item.id}`}
-            value={item.vendor}
-            placeholder="JULIDO"
-            onChange={(event) => updateLink(item.id, { vendor: event.target.value })}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label htmlFor={`code-${item.id}`} className="text-sm font-medium text-slate-700">
-            Code
-          </label>
-          <Input
-            id={`code-${item.id}`}
-            value={item.code}
-            placeholder="123"
-            onChange={(event) => updateLink(item.id, { code: event.target.value })}
-          />
-        </div>
-      </div>
-
       <ImageUploadField
-        label="Product Image"
-        hint="Preview swaps instantly with a local object URL before any upload pipeline exists."
+        label="Ảnh sản phẩm"
+        hint="Ảnh đổi ngay trong preview để bạn canh layout nhanh hơn."
         value={item.image}
         onChange={(value) => updateLink(item.id, { image: value })}
-        placeholder="Product image"
+        placeholder="Ảnh sản phẩm"
         imageClassName="rounded-[24px]"
       />
 
       <div className="space-y-2">
-        <label htmlFor={`product-url-${item.id}`} className="text-sm font-medium text-slate-700">
-          Product URL
+        <label htmlFor={`product-url-${item.id}`} className="text-sm font-medium text-slate-700 dark:text-slate-200">
+          Link sản phẩm
         </label>
         <Input
           id={`product-url-${item.id}`}
           value={item.url}
           placeholder="https://"
+          className="dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-slate-500"
           onChange={(event) => updateLink(item.id, { url: event.target.value })}
         />
       </div>
@@ -173,6 +158,9 @@ function ProductCardInput({ item }: { item: BuilderProductItem }) {
 
 export function LinksProductsPanel() {
   const links = useBuilderStore((state) => state.profileData.links);
+  const productCount = useBuilderStore(builderSelectors.productCount);
+  const hasProAccess = useBuilderStore(builderSelectors.hasProAccess);
+  const canAddMoreProducts = useBuilderStore(builderSelectors.canAddMoreProducts);
   const addLink = useBuilderStore((state) => state.addLink);
   const reorderLinks = useBuilderStore((state) => state.reorderLinks);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
@@ -194,21 +182,34 @@ export function LinksProductsPanel() {
 
   return (
     <BuilderPanelSection
-      eyebrow="Links & Products"
-      title="Stack, edit, and reorder blocks"
-      description="Use the drag handle to reorder the public profile. Product blocks include vendor, code, image, and destination URL."
+      eyebrow="Nội dung"
+      title="Sắp xếp, chỉnh sửa và thêm khối"
+      description="Thêm link hoặc sản phẩm, thay ảnh, chỉnh chữ và kéo thả thứ tự để dựng profile theo ý bạn."
     >
       <div className="space-y-5">
         <div className="flex flex-wrap gap-3">
-          <Button onClick={() => addLink('link')}>+ Add link</Button>
-          <Button variant="outline" onClick={() => addLink('product')}>
-            + Add product
+          <Button className="bg-rose-500 text-white hover:bg-rose-400 dark:border-transparent dark:bg-rose-500 dark:text-white dark:hover:bg-rose-400" onClick={() => addLink('link')}>
+            + Thêm link
+          </Button>
+          <Button
+            variant="outline"
+            className="dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/[0.08]"
+            onClick={() => addLink('product')}
+            disabled={!canAddMoreProducts}
+          >
+            + Thêm sản phẩm
           </Button>
         </div>
 
+        <div className="rounded-[24px] border border-gray-200 bg-gray-50 px-4 py-3 text-xs leading-6 text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400">
+          {hasProAccess
+            ? 'Gói Pro có thể thêm sản phẩm không giới hạn.'
+            : `Gói miễn phí chỉ thêm tối đa ${3} sản phẩm. Hiện tại bạn đang dùng ${productCount}/${3}. Muốn thêm nhiều hơn hãy nâng cấp Pro.`}
+        </div>
+
         {links.length === 0 ? (
-          <div className="rounded-[28px] border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-sm text-slate-500">
-            No blocks yet. Add a link or product to start composing the stack.
+          <div className="rounded-[28px] border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-sm text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400">
+            Chưa có khối nào. Hãy thêm link hoặc sản phẩm để bắt đầu dựng stack.
           </div>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

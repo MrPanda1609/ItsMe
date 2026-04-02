@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import type { CSSProperties } from 'react';
 import { cn } from '../../../lib/cn';
-import type { BuilderItem, BuilderProductItem, ProfileData } from '../types';
-import { buildAvatarStyle, buildBadgeStyle, buildGlassPanelStyle, buildProfileThemeVars, toDisplayUrl } from '../utils/profileTheme';
+import type { BuilderItem, BuilderProductItem, ProfileData, SocialLinks } from '../types';
+import { radiusTokenToValue, withAlpha } from '../utils/profileTheme';
 
 interface PublicProfileProps {
   profileData: ProfileData;
@@ -18,16 +18,77 @@ const isProductItem = (item: BuilderItem): item is BuilderProductItem => item.ty
 function ArrowIcon() {
   return (
     <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className="h-4 w-4">
-      <path d="M5.833 14.167 14.167 5.833M8.333 5.833h5.834v5.834" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7.5 5.833 12.5 10l-5 4.167" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function AccentBullet() {
-  return <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: 'var(--theme-accent)' }} />;
+function FacebookGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M13.5 21v-7h2.3l.4-2.7h-2.7V9.6c0-.8.2-1.4 1.4-1.4h1.5V5.8c-.3 0-1.1-.1-2-.1-2 0-3.4 1.2-3.4 3.5v2h-2.2V14h2.2v7h2.5Z"
+      />
+    </svg>
+  );
 }
 
-function ProfileLinkCard({ item, mode, style }: { item: BuilderItem; mode: 'preview' | 'public'; style: CSSProperties }) {
+function InstagramGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
+      <rect x="4.5" y="4.5" width="15" height="15" rx="4.2" stroke="currentColor" strokeWidth="1.8" fill="none" />
+      <circle cx="12" cy="12" r="3.4" stroke="currentColor" strokeWidth="1.8" fill="none" />
+      <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" />
+    </svg>
+  );
+}
+
+function TikTokGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
+      <path
+        d="M14.5 5c.7 1.9 2 3 4 3.4v2.4a6.5 6.5 0 0 1-3.3-1v4.8a5.2 5.2 0 1 1-5.2-5.1c.3 0 .7 0 1 .1v2.5a2.7 2.7 0 1 0 1.7 2.5V5h1.8Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+function ZaloGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
+      <path d="M6 7.5h12v2l-7.3 7H18V18H6v-2l7.3-7H6V7.5Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+const normalizeExternalUrl = (value: string) => {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return '';
+  }
+
+  if (/^(https?:\/\/|mailto:|tel:|zalo:)/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  return `https://${trimmed}`;
+};
+
+const socialPlatformMeta: Array<{
+  key: keyof SocialLinks;
+  label: string;
+  icon: () => JSX.Element;
+}> = [
+  { key: 'facebook', label: 'Facebook', icon: FacebookGlyph },
+  { key: 'instagram', label: 'Instagram', icon: InstagramGlyph },
+  { key: 'tiktok', label: 'TikTok', icon: TikTokGlyph },
+  { key: 'zalo', label: 'Zalo', icon: ZaloGlyph },
+];
+
+function LinkCard({ item, mode, cardStyle, profileData }: { item: BuilderItem; mode: 'preview' | 'public'; cardStyle: CSSProperties; profileData: ProfileData }) {
   return (
     <motion.a
       layout
@@ -36,31 +97,51 @@ function ProfileLinkCard({ item, mode, style }: { item: BuilderItem; mode: 'prev
       rel={mode === 'public' ? 'noreferrer' : undefined}
       onClick={mode === 'preview' ? (event) => event.preventDefault() : undefined}
       transition={cardTransition}
-      className="group relative block overflow-hidden border px-4 py-4 text-slate-900"
-      style={style}
+      className="group flex items-center gap-4 border p-4"
+      style={cardStyle}
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),transparent)] opacity-70" />
-      <div className="relative flex items-center gap-3">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center border border-gray-200 bg-white shadow-sm" style={{ borderRadius: 'calc(var(--theme-card-radius) - 8px)' }}>
-          {item.type === 'link' && item.thumbnail ? (
-            <img src={item.thumbnail} alt={item.title} className="h-full w-full object-cover" style={{ borderRadius: 'calc(var(--theme-card-radius) - 8px)' }} />
-          ) : (
-            <AccentBullet />
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[15px] font-semibold">{item.title}</p>
-          <p className="mt-1 truncate text-xs text-slate-500">{toDisplayUrl(item.url)}</p>
-        </div>
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center bg-slate-950 text-white shadow-sm transition group-hover:translate-x-0.5" style={{ borderRadius: 'calc(var(--theme-card-radius) - 10px)' }}>
-          <ArrowIcon />
-        </div>
+      <div
+        className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden border"
+        style={{
+          borderRadius: '18px',
+          borderColor: withAlpha(profileData.accentColor, 0.14),
+          backgroundColor: item.type === 'link' && item.thumbnail ? 'transparent' : withAlpha(profileData.accentColor, 0.08),
+        }}
+      >
+        {item.type === 'link' && item.thumbnail ? (
+          <img src={item.thumbnail} alt={item.title} className="h-full w-full object-cover" />
+        ) : (
+          <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: profileData.accentColor }} />
+        )}
       </div>
+
+      <div className="min-w-0 flex-1">
+        <p
+          className="truncate font-semibold"
+          style={{
+            color: profileData.cardTitleColor,
+            fontSize: Math.max(profileData.cardTitleSize - 1, 14),
+            lineHeight: 1.45,
+          }}
+        >
+          {item.title}
+        </p>
+      </div>
+
+      <span
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition group-hover:translate-x-0.5"
+        style={{
+          backgroundColor: withAlpha(profileData.accentColor, 0.1),
+          color: profileData.accentColor,
+        }}
+      >
+        <ArrowIcon />
+      </span>
     </motion.a>
   );
 }
 
-function ProductCard({ item, mode, style, badgeStyle }: { item: BuilderProductItem; mode: 'preview' | 'public'; style: CSSProperties; badgeStyle: CSSProperties }) {
+function ProductCard({ item, mode, cardStyle, profileData }: { item: BuilderProductItem; mode: 'preview' | 'public'; cardStyle: CSSProperties; profileData: ProfileData }) {
   return (
     <motion.a
       layout
@@ -69,39 +150,50 @@ function ProductCard({ item, mode, style, badgeStyle }: { item: BuilderProductIt
       rel={mode === 'public' ? 'noreferrer' : undefined}
       onClick={mode === 'preview' ? (event) => event.preventDefault() : undefined}
       transition={cardTransition}
-      className="group relative block overflow-hidden border p-4 text-slate-900"
-      style={style}
+      className="group flex items-center gap-4 border p-3"
+      style={cardStyle}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(255,255,255,0.16),transparent_45%)] opacity-80" />
-      <div className="relative flex gap-4">
-        <div className="relative aspect-square w-24 shrink-0 overflow-hidden border border-gray-200 bg-white shadow-sm" style={{ borderRadius: 'calc(var(--theme-card-radius) - 6px)' }}>
-          {item.image ? (
-            <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-xs font-semibold uppercase tracking-[0.28em] text-slate-900" style={{ backgroundColor: 'var(--theme-accent-soft)' }}>
-              {item.vendor}
-            </div>
-          )}
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center px-3 py-1 text-[10px] font-medium uppercase tracking-[0.28em]" style={badgeStyle}>
-              {item.vendor}
-            </span>
-            <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-100 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.28em] text-slate-600">
-              Code {item.code}
-            </span>
+      <div
+        className="overflow-hidden border"
+        style={{
+          borderRadius: '20px',
+          borderColor: withAlpha(profileData.accentColor, 0.1),
+          backgroundColor: withAlpha(profileData.accentColor, 0.05),
+        }}
+      >
+        {item.image ? (
+          <img src={item.image} alt={item.title} className="h-[130px] w-[130px] object-cover" />
+        ) : (
+          <div
+            className="flex h-[130px] w-[130px] items-center justify-center px-4 text-center text-xs font-semibold uppercase tracking-[0.28em]"
+            style={{ color: profileData.accentColor }}
+          >
+            Ảnh sản phẩm
           </div>
+        )}
+      </div>
 
-          <p className="mt-3 line-clamp-2 text-[15px] font-semibold leading-6">{item.title}</p>
-          <div className="mt-4 flex items-center justify-between gap-3">
-            <p className="truncate text-xs text-slate-500">{toDisplayUrl(item.url)}</p>
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-slate-950 text-white shadow-sm transition group-hover:translate-x-0.5" style={{ borderRadius: 'calc(var(--theme-card-radius) - 12px)' }}>
-              <ArrowIcon />
-            </div>
-          </div>
-        </div>
+      <div className="min-w-0 flex flex-1 items-center justify-between gap-3 self-stretch">
+        <p
+          className="line-clamp-2 flex-1 font-semibold"
+          style={{
+            color: profileData.cardTitleColor,
+            fontSize: profileData.cardTitleSize,
+            lineHeight: 1.55,
+          }}
+        >
+          {item.title}
+        </p>
+
+        <span
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition group-hover:translate-x-0.5"
+          style={{
+            backgroundColor: withAlpha(profileData.accentColor, 0.1),
+            color: profileData.accentColor,
+          }}
+        >
+          <ArrowIcon />
+        </span>
       </div>
     </motion.a>
   );
@@ -109,71 +201,162 @@ function ProductCard({ item, mode, style, badgeStyle }: { item: BuilderProductIt
 
 export function PublicProfile({ profileData, mustShowWatermark, mode = 'public', className }: PublicProfileProps) {
   const visibleItems = profileData.links.filter((item) => item.enabled);
-  const themeVars = buildProfileThemeVars(profileData);
-  const glassPanelStyle = buildGlassPanelStyle(profileData);
-  const avatarStyle = buildAvatarStyle(profileData);
-  const badgeStyle = buildBadgeStyle(profileData);
-  const avatarFallback = profileData.displayName.trim().slice(0, 1).toUpperCase() || 'K';
+  const visibleSocialLinks = socialPlatformMeta.filter(({ key }) => profileData.socialLinks[key].trim());
+  const coverImage = profileData.coverImage ?? profileData.avatar ?? '/home.png';
+  const cardRadius = radiusTokenToValue(profileData.shapeStyle.cardRadius);
+  const cardStyle: CSSProperties = {
+    borderRadius: cardRadius,
+    borderColor: profileData.selectedTheme.borderColor,
+    borderWidth: `${profileData.cardStyle.borderWidth}px`,
+    backgroundColor: profileData.surfaceColor,
+    boxShadow: profileData.cardStyle.shadow,
+  };
 
   return (
-    <div className={cn('relative h-full w-full overflow-hidden text-slate-900', className)} style={themeVars}>
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-14 top-10 h-40 w-40 rounded-full blur-3xl" style={{ backgroundColor: 'var(--theme-accent-soft)' }} />
-        <div className="absolute bottom-16 right-[-72px] h-48 w-48 rounded-full blur-3xl" style={{ backgroundColor: 'var(--theme-accent-strong)' }} />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent_25%)]" />
+    <div
+      className={cn('relative h-full w-full overflow-hidden', className)}
+      style={{
+        backgroundColor: profileData.backgroundColor,
+        color: profileData.nameColor,
+        fontFamily: profileData.selectedFont.family,
+      }}
+    >
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute inset-x-0 bottom-0 h-[48%]" style={{ background: `linear-gradient(180deg, ${withAlpha(profileData.backgroundColor, 0)} 0%, ${profileData.backgroundColor} 100%)` }} />
+        <div className="absolute left-[-40px] top-[34%] h-44 w-44 rounded-full blur-3xl" style={{ backgroundColor: withAlpha(profileData.accentColor, 0.14) }} />
+        <div className="absolute bottom-10 right-[-48px] h-52 w-52 rounded-full blur-3xl" style={{ backgroundColor: withAlpha(profileData.accentColor, 0.18) }} />
       </div>
 
-      <div className="relative h-full overflow-y-auto">
-        <div className="mx-auto flex min-h-full w-full max-w-[430px] flex-col px-4 pb-6 pt-6">
-          <motion.header layout transition={cardTransition} className="relative overflow-hidden border px-5 pb-5 pt-6" style={glassPanelStyle}>
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.16),transparent)] opacity-75" />
-            <div className="relative flex items-start gap-4">
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden border bg-white text-2xl font-semibold text-slate-900 shadow-sm" style={avatarStyle}>
-                {profileData.avatar ? <img src={profileData.avatar} alt={profileData.displayName} className="h-full w-full object-cover" /> : <span>{avatarFallback}</span>}
-              </div>
+      <div className="relative h-full overflow-y-auto hidden-scrollbar">
+        <div className="min-h-full pb-10">
+          <div className="relative h-[320px] overflow-hidden">
+            <img
+              src={coverImage}
+              alt={profileData.displayName}
+              className="h-full w-full object-cover"
+              style={{ objectPosition: `${profileData.coverImagePositionX}% ${profileData.coverImagePositionY}%` }}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(180deg, ${withAlpha(profileData.backgroundColor, 0)} 24%, ${withAlpha(profileData.backgroundColor, 0.16)} 48%, ${withAlpha(profileData.backgroundColor, 0.94)} 82%, ${profileData.backgroundColor} 100%)`,
+              }}
+            />
+            <div
+              className="absolute bottom-[-34px] left-1/2 h-28 w-[88%] -translate-x-1/2 rounded-full blur-3xl"
+              style={{ backgroundColor: withAlpha(profileData.backgroundColor, 0.96) }}
+            />
+          </div>
 
-              <div className="min-w-0 flex-1 pt-1">
-                <p className="text-[11px] font-medium uppercase tracking-[0.32em] opacity-70">TikTok Creator Profile</p>
-                <h1 className="mt-2 break-words text-[28px] font-semibold leading-8 tracking-[-0.04em]">{profileData.displayName}</h1>
-                <p className="mt-3 text-sm leading-6 opacity-80">{profileData.bio}</p>
+          <div className="relative -mt-6 flex flex-col items-center px-4 text-center">
+            <h1
+              className="mt-4 break-words font-bold tracking-[-0.06em]"
+              style={{
+                color: profileData.nameColor,
+                fontSize: profileData.displayNameSize,
+                lineHeight: 1.08,
+              }}
+            >
+              {profileData.displayName || 'Tên KOC của bạn'}
+            </h1>
+
+            <p
+              className="mt-3 max-w-[26ch] whitespace-pre-line"
+              style={{
+                color: profileData.bioColor,
+                fontSize: profileData.bioSize,
+                lineHeight: 1.75,
+              }}
+            >
+              {profileData.bio || 'Hãy mô tả ngắn gọn về bạn, nội dung bạn chia sẻ và sản phẩm bạn review.'}
+            </p>
+
+            {visibleSocialLinks.length > 0 ? (
+              <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+                {visibleSocialLinks.map(({ key, label, icon: Icon }) => (
+                  <a
+                    key={key}
+                    href={normalizeExternalUrl(profileData.socialLinks[key])}
+                    target={mode === 'public' ? '_blank' : undefined}
+                    rel={mode === 'public' ? 'noreferrer' : undefined}
+                    onClick={mode === 'preview' ? (event) => event.preventDefault() : undefined}
+                    aria-label={label}
+                    className="flex h-12 w-12 items-center justify-center rounded-full border"
+                    style={{
+                      color: profileData.accentColor,
+                      borderColor: withAlpha(profileData.accentColor, 0.16),
+                      backgroundColor: profileData.surfaceColor,
+                      boxShadow: `0 12px 30px ${withAlpha(profileData.accentColor, 0.18)}`,
+                    }}
+                  >
+                    <Icon />
+                  </a>
+                ))}
               </div>
+            ) : null}
+          </div>
+
+          <section className="mt-8 px-3 pb-4">
+            <div className="text-center">
+              <span
+                className="inline-flex rounded-full px-4 py-2 font-semibold uppercase tracking-[0.26em]"
+                style={{
+                  color: profileData.sectionBadgeColor,
+                  backgroundColor: withAlpha(profileData.accentColor, 0.08),
+                  boxShadow: `inset 0 0 0 1px ${withAlpha(profileData.accentColor, 0.14)}`,
+                  fontSize: profileData.sectionBadgeSize,
+                }}
+              >
+                {profileData.sectionBadge || 'Các bạn hãy tham khảo'}
+              </span>
+
+              <h2
+                className="mt-5 font-bold tracking-[-0.05em]"
+                style={{
+                  color: profileData.sectionTitleColor,
+                  fontSize: profileData.sectionTitleSize,
+                  lineHeight: 1.18,
+                }}
+              >
+                {profileData.sectionTitle || 'Sản phẩm yêu thích của mình nhé!'}
+              </h2>
             </div>
 
-            <div className="mt-5 flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center px-3 py-1 text-[10px] font-medium uppercase tracking-[0.28em]" style={badgeStyle}>
-                {visibleItems.length} live blocks
-              </span>
-              <span className="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-[10px] font-medium uppercase tracking-[0.28em] text-slate-600 shadow-sm">
-                {profileData.selectedTheme.name}
-              </span>
-            </div>
-          </motion.header>
-
-          <section className="mt-4 flex-1">
-            {visibleItems.length > 0 ? (
-              <motion.div layout className="space-y-3">
+            <div className="mt-6 space-y-5">
+              {visibleItems.length > 0 ? (
                 <AnimatePresence initial={false} mode="popLayout">
                   {visibleItems.map((item) =>
                     isProductItem(item) ? (
-                      <ProductCard key={item.id} item={item} mode={mode} style={glassPanelStyle} badgeStyle={badgeStyle} />
+                      <ProductCard key={item.id} item={item} mode={mode} cardStyle={cardStyle} profileData={profileData} />
                     ) : (
-                      <ProfileLinkCard key={item.id} item={item} mode={mode} style={glassPanelStyle} />
+                      <LinkCard key={item.id} item={item} mode={mode} cardStyle={cardStyle} profileData={profileData} />
                     ),
                   )}
                 </AnimatePresence>
-              </motion.div>
-            ) : (
-              <motion.div layout transition={cardTransition} className="relative overflow-hidden border px-5 py-6" style={glassPanelStyle}>
-                <p className="text-sm font-semibold">No live blocks yet</p>
-                <p className="mt-2 text-sm leading-6 opacity-75">Add a link or product card from the editor to populate this public profile.</p>
-              </motion.div>
-            )}
+              ) : (
+                <motion.div layout transition={cardTransition} className="border px-5 py-6 text-left" style={cardStyle}>
+                  <p className="text-sm font-semibold" style={{ color: profileData.sectionTitleColor }}>
+                    Chưa có khối nội dung nào
+                  </p>
+                  <p className="mt-2 text-sm leading-6" style={{ color: profileData.mutedTextColor }}>
+                    Hãy thêm link hoặc sản phẩm từ panel bên trái để hoàn thiện profile công khai của bạn.
+                  </p>
+                </motion.div>
+              )}
+            </div>
           </section>
 
           {mustShowWatermark ? (
-            <footer className="mt-4 flex justify-center pb-2 pt-1">
-              <div className="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-[11px] font-medium uppercase tracking-[0.3em] text-slate-500 shadow-sm">
-                Built with ItsMe
+            <footer className="mt-2 flex justify-center pb-2 pt-1">
+              <div
+                className="inline-flex items-center rounded-full border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.3em]"
+                style={{
+                  color: profileData.mutedTextColor,
+                  borderColor: profileData.selectedTheme.borderColor,
+                  backgroundColor: withAlpha(profileData.surfaceColor, 0.92),
+                }}
+              >
+                Tạo với ItsMe
               </div>
             </footer>
           ) : null}

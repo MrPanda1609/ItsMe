@@ -42,7 +42,7 @@ const hexToRgb = (value: string) => {
   };
 };
 
-const withAlpha = (value: string, alpha: number) => {
+export const withAlpha = (value: string, alpha: number) => {
   const rgb = hexToRgb(value);
 
   if (!rgb) {

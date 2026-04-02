@@ -33,8 +33,8 @@ const featureItems = [
 ];
 
 const pricingPlans = {
-  free: ['Trình tạo profile', 'Giao diện cơ bản', 'Khối sản phẩm', 'Watermark ItsMe'],
-  pro: ['Toàn bộ tính năng gói Miễn phí', 'Giao diện cao cấp', 'Tùy chỉnh bố cục nâng cao', 'Tắt watermark', 'Hỗ trợ ưu tiên cho creator'],
+  free: ['Trình tạo profile cơ bản', 'Chỉnh màu nền, thẻ và màu nhấn', 'Tối đa 3 sản phẩm', 'Watermark ItsMe'],
+  pro: ['Toàn bộ tính năng gói Miễn phí', 'Mở khóa toàn bộ bảng màu', 'Thêm sản phẩm không giới hạn', 'Tắt watermark', 'Các tính năng nâng cao sẽ mở thêm sau'],
 };
 
 function SectionHeading({
@@ -304,7 +304,7 @@ export function LandingPage() {
           <PricingCard
             title="Miễn phí"
             price="0 VND"
-            description="Phù hợp cho creator muốn bắt đầu nhanh với một profile gọn gàng, dễ dùng và đủ để dẫn traffic đến sản phẩm của mình."
+            description="Phù hợp cho creator muốn bắt đầu nhanh với profile gọn gàng, có thể chỉnh các màu cơ bản và trưng bày tối đa 3 sản phẩm đầu tiên."
             features={pricingPlans.free}
             cta="Bắt đầu với gói Miễn phí"
           />
@@ -312,7 +312,7 @@ export function LandingPage() {
           <PricingCard
             title="Pro"
             price="150,000"
-            description="Dành cho creator muốn có nhiều quyền tùy biến hơn, hình ảnh cao cấp hơn và đầu ra profile chỉn chu hơn để làm việc với nhãn hàng."
+            description="Dành cho creator muốn mở toàn bộ quyền tùy biến màu sắc, đăng nhiều sản phẩm hơn và sẵn sàng đón các tính năng cao cấp sẽ bổ sung tiếp theo."
             features={pricingPlans.pro}
             cta="Nâng cấp lên Pro"
             highlighted
