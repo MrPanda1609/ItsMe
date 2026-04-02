@@ -231,27 +231,27 @@ export function LandingPage() {
       <section className="max-w-7xl mx-auto px-4 pt-32 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="flex flex-col items-start text-left space-y-6">
           <span className="inline-flex rounded-full border border-black/5 bg-white px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-rose-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-rose-300">
-            Creator growth stack
+            Bộ công cụ tăng trưởng creator
           </span>
 
           <h1 className="max-w-xl text-5xl font-bold tracking-[-0.06em] text-gray-900 dark:text-gray-100 md:text-7xl">
-            All you need to build your KOC Profile
+            Mọi thứ bạn cần để xây dựng hồ sơ KOC
           </h1>
 
           <p className="max-w-xl text-base leading-8 text-gray-600 dark:text-gray-400 md:text-lg">
-            Build a premium creator storefront, showcase products, collect booking requests, and turn every profile visit into measurable affiliate revenue.
+            Xây dựng hồ sơ creator chuyên nghiệp, trưng bày sản phẩm, nhận yêu cầu booking và biến mỗi lượt ghé thăm thành doanh thu affiliate có thể đo lường.
           </p>
 
           <div className="flex flex-wrap gap-4">
             <a href="/login" className="inline-flex items-center gap-2 rounded-full bg-rose-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-rose-400">
-              Get started free
+              Bắt đầu miễn phí
               <ArrowRight className="h-4 w-4" strokeWidth={1.8} />
             </a>
             <a
-              href="mailto:hello@itsme.vn?subject=Book%20a%20demo"
+              href="mailto:hello@itsme.vn?subject=Dat%20lich%20demo"
               className="inline-flex items-center gap-2 rounded-full border border-black/5 bg-white px-6 py-3 text-sm font-semibold text-gray-900 transition hover:bg-gray-50 dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/[0.08]"
             >
-              Book a demo
+              Đặt lịch demo
               <ArrowRight className="h-4 w-4" strokeWidth={1.8} />
             </a>
           </div>
