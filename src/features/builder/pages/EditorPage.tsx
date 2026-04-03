@@ -132,6 +132,29 @@ function PreviewCanvas({ publicHref, onOpenPreview, onCopyPublicLink, copyLabel 
   );
 }
 
+const LOCAL_DRAFT_KEY = (userId: string) => `itsme-local-draft-${userId}`;
+const LOCAL_DRAFT_TS_KEY = (userId: string) => `itsme-local-draft-ts-${userId}`;
+
+const saveLocalDraft = (userId: string, snapshot: string) => {
+  try {
+    window.localStorage.setItem(LOCAL_DRAFT_KEY(userId), snapshot);
+    window.localStorage.setItem(LOCAL_DRAFT_TS_KEY(userId), Date.now().toString());
+  } catch {
+    // ignore storage errors
+  }
+};
+
+const loadLocalDraft = (userId: string): { snapshot: string; ts: number } | null => {
+  try {
+    const snapshot = window.localStorage.getItem(LOCAL_DRAFT_KEY(userId));
+    const ts = Number(window.localStorage.getItem(LOCAL_DRAFT_TS_KEY(userId)) ?? '0');
+    if (snapshot) return { snapshot, ts };
+  } catch {
+    // ignore
+  }
+  return null;
+};
+
 export function EditorPage() {
   const { user, isConfigured } = useAuth();
   const profileData = useBuilderStore(builderSelectors.profileData);
@@ -153,10 +176,17 @@ export function EditorPage() {
   const [showProTrialModal, setShowProTrialModal] = useState(false);
   const draftSnapshotRef = useRef('');
   const draftRequestIdRef = useRef(0);
+  // track which userId we've already loaded — prevents reload on token refresh
+  const loadedUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!user) {
       setLoading(false);
+      return;
+    }
+
+    // skip if same user already loaded
+    if (loadedUserIdRef.current === user.id) {
       return;
     }
 
@@ -173,10 +203,33 @@ export function EditorPage() {
     ensureOwnProfile(user.id, user.email)
       .then((payload) => {
         if (!active) return;
-        hydrateBuilder(payload);
-        draftSnapshotRef.current = JSON.stringify(payload.draftProfileData);
-        setDraftSyncState('saved');
-        setDraftSyncMessage('Đã lưu bản nháp');
+
+        // check if localStorage has a newer unsaved draft
+        const localDraft = loadLocalDraft(user.id);
+        const serverDraftSnapshot = JSON.stringify(payload.draftProfileData);
+
+        if (localDraft && localDraft.snapshot !== serverDraftSnapshot) {
+          // merge: hydrate from server for auth/plan, then restore local draft data
+          try {
+            const localProfileData = JSON.parse(localDraft.snapshot);
+            hydrateBuilder({ ...payload, draftProfileData: localProfileData });
+            draftSnapshotRef.current = localDraft.snapshot;
+            setDraftSyncState('saving');
+            setDraftSyncMessage('Đang đồng bộ bản nháp chưa lưu...');
+          } catch {
+            hydrateBuilder(payload);
+            draftSnapshotRef.current = serverDraftSnapshot;
+            setDraftSyncState('saved');
+            setDraftSyncMessage('Đã lưu bản nháp');
+          }
+        } else {
+          hydrateBuilder(payload);
+          draftSnapshotRef.current = serverDraftSnapshot;
+          setDraftSyncState('saved');
+          setDraftSyncMessage('Đã lưu bản nháp');
+        }
+
+        loadedUserIdRef.current = user.id;
       })
       .catch(() => {
         if (!active) return;
@@ -202,6 +255,9 @@ export function EditorPage() {
     if (snapshot === draftSnapshotRef.current) {
       return;
     }
+
+    // instant local backup — survives tab switch & page reload
+    saveLocalDraft(user.id, snapshot);
 
     setDraftSyncState('saving');
     setDraftSyncMessage('Đang tự lưu...');
