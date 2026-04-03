@@ -1,4 +1,5 @@
 export type BuilderBlockType = 'link' | 'product';
+export type UserPlan = 'free' | 'pro' | 'admin';
 
 export interface ThemePreset {
   id: string;

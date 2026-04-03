@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
+import { House, MoonStar, SunMedium } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 import { useAppExperience } from '../../../providers/AppExperienceProvider';
-import { setMockAuthenticated } from '../../auth/mockAuth';
+import { useAuth } from '../../../providers/AuthProvider';
 import { builderSelectors, useBuilderStore } from '../store/useBuilderStore';
 import { useIsDesktopEditor } from '../hooks/useIsDesktopEditor';
 
@@ -43,14 +44,15 @@ export function EditorLayout({ controls, preview, headerActions }: EditorLayoutP
   const userStatus = useBuilderStore(builderSelectors.userStatus);
   const hasProAccess = useBuilderStore(builderSelectors.hasProAccess);
   const { mode, toggleMode } = useAppExperience();
+  const { signOut } = useAuth();
   const isDark = mode === 'dark';
 
   const handleGoHome = () => {
     window.location.assign('/');
   };
 
-  const handleLogout = () => {
-    setMockAuthenticated(false);
+  const handleLogout = async () => {
+    await signOut();
     window.location.assign('/login');
   };
 
@@ -66,38 +68,51 @@ export function EditorLayout({ controls, preview, headerActions }: EditorLayoutP
                 <p className="text-[11px] font-semibold uppercase tracking-[0.38em] text-rose-500 dark:text-rose-300">Studio</p>
               </div>
 
-              <div className="flex flex-col items-end gap-3 text-xs">
-                <div className="flex flex-wrap items-center justify-end gap-2">
-                  {headerActions}
-                  <Button type="button" variant="outline" size="sm" onClick={toggleMode} className="h-10 rounded-full px-4 whitespace-nowrap">
-                    {isDark ? 'Chế độ sáng' : 'Chế độ tối'}
-                  </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={handleGoHome} className="h-10 rounded-full px-4 whitespace-nowrap">
-                    Trang chủ
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleLogout}
-                    className="h-10 rounded-full px-4 whitespace-nowrap text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-300 dark:hover:bg-rose-500/10 dark:hover:text-rose-200"
-                  >
-                    Đăng xuất
-                  </Button>
-                </div>
+              <div className="flex items-center justify-end gap-2 text-xs">
+                {headerActions}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleMode}
+                  className="h-10 w-10 rounded-full px-0"
+                  aria-label={isDark ? 'Chế độ sáng' : 'Chế độ tối'}
+                  title={isDark ? 'Chế độ sáng' : 'Chế độ tối'}
+                >
+                  {isDark ? <SunMedium className="h-4 w-4" strokeWidth={1.8} /> : <MoonStar className="h-4 w-4" strokeWidth={1.8} />}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGoHome}
+                  className="h-10 w-10 rounded-full px-0"
+                  aria-label="Trang chủ"
+                  title="Trang chủ"
+                >
+                  <House className="h-4 w-4" strokeWidth={1.8} />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="h-10 rounded-full px-4 whitespace-nowrap text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-300 dark:hover:bg-rose-500/10 dark:hover:text-rose-200"
+                >
+                  Đăng xuất
+                </Button>
 
-                <div className="flex flex-wrap items-center justify-end gap-2">
-                  <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-slate-700 shadow-sm dark:border-white/10 dark:bg-white/[0.04] dark:text-white">
-                    {userStatus.isAdmin ? 'Quản trị' : 'Người dùng'}
-                  </span>
+                <div className="hidden items-center gap-2 2xl:flex">
                   <span
                     className={`rounded-full px-3 py-1.5 shadow-sm ${
-                      hasProAccess
-                        ? 'border border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-400/30 dark:bg-rose-500/10 dark:text-rose-200'
+                      userStatus.isAdmin
+                        ? 'border border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-400/30 dark:bg-violet-500/10 dark:text-violet-200'
+                        : hasProAccess
+                          ? 'border border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-400/30 dark:bg-rose-500/10 dark:text-rose-200'
                         : 'border border-gray-200 bg-gray-50 text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-white'
                     }`}
                   >
-                    {hasProAccess ? 'Đã mở gói Pro' : 'Gói miễn phí'}
+                    {userStatus.isAdmin ? 'Admin' : hasProAccess ? 'Pro User' : 'Free User'}
                   </span>
                 </div>
               </div>

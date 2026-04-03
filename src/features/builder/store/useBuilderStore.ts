@@ -9,9 +9,9 @@ import {
   SHAPE_STYLE_PRESETS,
   THEME_PRESETS,
   createDefaultLinkItem,
-  createDefaultProfileLinks,
   createDefaultProductItem,
 } from '../config/builderPresets';
+import { createDefaultProfileData } from '../config/defaultProfileData';
 import type {
   BuilderBlockType,
   BuilderItem,
@@ -27,6 +27,7 @@ interface BuilderStore {
   profileData: ProfileData;
   publishedProfileData: ProfileData;
   userStatus: UserStatus;
+  hydrateBuilder: (payload: { draftProfileData: ProfileData; publishedProfileData: ProfileData; userStatus: UserStatus }) => void;
   setProfileField: <K extends keyof ProfileData>(field: K, value: ProfileData[K]) => void;
   setUserStatus: (status: Partial<UserStatus>) => void;
   addLink: (type?: BuilderBlockType) => void;
@@ -42,121 +43,11 @@ interface BuilderStore {
   resetBuilder: () => void;
 }
 
-const PUBLISHED_PROFILE_STORAGE_KEY = 'itsme-builder-published-profile';
 const MAX_FREE_PRODUCTS = 3;
 const PRO_ONLY_COLOR_FIELDS = new Set<keyof ProfileData>(['sectionBadgeColor', 'nameColor', 'bioColor', 'sectionTitleColor', 'cardTitleColor', 'mutedTextColor']);
-
-const createDefaultProfileData = (): ProfileData => ({
-  avatar: null,
-  coverImage: '/home.png',
-  coverImagePositionX: 50,
-  coverImagePositionY: 0,
-  socialLinks: {
-    facebook: '',
-    instagram: '',
-    tiktok: '',
-    zalo: '',
-  },
-  displayName: 'Ngiangg',
-  bio: 'Chuyên làm review, unboxing\nNhững sp tui review đều ở bên dưới nha',
-  sectionBadge: 'Các bạn hãy tham khảo',
-  sectionTitle: 'Sản phẩm yêu thích của mình nhé!',
-  backgroundColor: DEFAULT_THEME.backgroundColor,
-  surfaceColor: DEFAULT_THEME.surfaceColor,
-  accentColor: DEFAULT_THEME.accentColor,
-  sectionBadgeColor: DEFAULT_THEME.accentColor,
-  nameColor: DEFAULT_THEME.textColor,
-  bioColor: DEFAULT_THEME.mutedTextColor,
-  sectionTitleColor: DEFAULT_THEME.textColor,
-  cardTitleColor: DEFAULT_THEME.textColor,
-  mutedTextColor: DEFAULT_THEME.mutedTextColor,
-  sectionBadgeSize: 10,
-  displayNameSize: 32,
-  bioSize: 15,
-  sectionTitleSize: 28,
-  cardTitleSize: 17,
-  links: createDefaultProfileLinks(),
-  selectedTheme: DEFAULT_THEME,
-  selectedFont: DEFAULT_FONT,
-  cardStyle: DEFAULT_CARD_STYLE,
-  shapeStyle: DEFAULT_SHAPE_STYLE,
-  watermarkEnabled: true,
-});
-
-const defaultUserStatus: UserStatus = {
-  isPro: false,
-  isAdmin: false,
-};
+const defaultUserStatus: UserStatus = { isPro: false, isAdmin: false };
 
 const cloneProfileData = (profileData: ProfileData): ProfileData => JSON.parse(JSON.stringify(profileData)) as ProfileData;
-
-const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
-
-const mergeProfileData = (fallback: ProfileData, candidate: unknown): ProfileData => {
-  if (!isRecord(candidate)) {
-    return fallback;
-  }
-
-  return {
-    ...fallback,
-    ...candidate,
-    links: Array.isArray(candidate.links) ? (candidate.links as ProfileData['links']) : fallback.links,
-    socialLinks: isRecord(candidate.socialLinks) ? { ...fallback.socialLinks, ...candidate.socialLinks } : fallback.socialLinks,
-    selectedTheme: isRecord(candidate.selectedTheme) ? { ...fallback.selectedTheme, ...candidate.selectedTheme } : fallback.selectedTheme,
-    selectedFont: isRecord(candidate.selectedFont) ? { ...fallback.selectedFont, ...candidate.selectedFont } : fallback.selectedFont,
-    cardStyle: isRecord(candidate.cardStyle) ? { ...fallback.cardStyle, ...candidate.cardStyle } : fallback.cardStyle,
-    shapeStyle: isRecord(candidate.shapeStyle) ? { ...fallback.shapeStyle, ...candidate.shapeStyle } : fallback.shapeStyle,
-  };
-};
-
-const loadPublishedProfileData = (): ProfileData => {
-  const fallback = createDefaultProfileData();
-
-  if (typeof window === 'undefined') {
-    return fallback;
-  }
-
-  try {
-    const stored = window.localStorage.getItem(PUBLISHED_PROFILE_STORAGE_KEY);
-
-    if (!stored) {
-      return fallback;
-    }
-
-    return mergeProfileData(fallback, JSON.parse(stored));
-  } catch {
-    return fallback;
-  }
-};
-
-const persistPublishedProfileData = (profileData: ProfileData) => {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  try {
-    window.localStorage.setItem(PUBLISHED_PROFILE_STORAGE_KEY, JSON.stringify(profileData));
-  } catch {
-    // ignore storage failures
-  }
-};
-
-const areProfilesEqual = (left: ProfileData, right: ProfileData) => JSON.stringify(left) === JSON.stringify(right);
-
-const applyThemePreset = (profileData: ProfileData, theme: ThemePreset): ProfileData => ({
-  ...profileData,
-  selectedTheme: theme,
-  backgroundColor: theme.backgroundColor,
-  surfaceColor: theme.surfaceColor,
-  accentColor: theme.accentColor,
-  sectionBadgeColor: theme.accentColor,
-  nameColor: theme.textColor,
-  bioColor: theme.mutedTextColor,
-  sectionTitleColor: theme.textColor,
-  cardTitleColor: theme.textColor,
-  mutedTextColor: theme.mutedTextColor,
-});
-
 const hasProAccess = (userStatus: UserStatus) => userStatus.isPro || userStatus.isAdmin;
 
 const limitProductsForFree = (links: BuilderItem[]) => {
@@ -174,7 +65,6 @@ const limitProductsForFree = (links: BuilderItem[]) => {
 
 const sanitizeProfileData = (profileData: ProfileData, userStatus: UserStatus): ProfileData => {
   const proAccess = hasProAccess(userStatus);
-
   const selectedTheme = proAccess || !profileData.selectedTheme.isPro ? profileData.selectedTheme : DEFAULT_THEME;
   const selectedFont = proAccess || !profileData.selectedFont.isPro ? profileData.selectedFont : DEFAULT_FONT;
   const cardStyle = proAccess || !profileData.cardStyle.isPro ? profileData.cardStyle : DEFAULT_CARD_STYLE;
@@ -197,9 +87,6 @@ const sanitizeProfileData = (profileData: ProfileData, userStatus: UserStatus): 
   };
 };
 
-const initialPublishedProfileData = sanitizeProfileData(loadPublishedProfileData(), defaultUserStatus);
-const initialDraftProfileData = cloneProfileData(initialPublishedProfileData);
-
 const reorder = (items: BuilderItem[], startIndex: number, endIndex: number) => {
   const nextItems = [...items];
   const [movedItem] = nextItems.splice(startIndex, 1);
@@ -212,10 +99,24 @@ const reorder = (items: BuilderItem[], startIndex: number, endIndex: number) => 
   return nextItems;
 };
 
+const createInitialState = () => {
+  const defaultProfile = createDefaultProfileData();
+
+  return {
+    profileData: cloneProfileData(defaultProfile),
+    publishedProfileData: cloneProfileData(defaultProfile),
+    userStatus: defaultUserStatus,
+  };
+};
+
 export const useBuilderStore = create<BuilderStore>((set) => ({
-  profileData: initialDraftProfileData,
-  publishedProfileData: initialPublishedProfileData,
-  userStatus: defaultUserStatus,
+  ...createInitialState(),
+  hydrateBuilder: ({ draftProfileData, publishedProfileData, userStatus }) =>
+    set(() => ({
+      userStatus,
+      profileData: sanitizeProfileData(cloneProfileData(draftProfileData), userStatus),
+      publishedProfileData: sanitizeProfileData(cloneProfileData(publishedProfileData), userStatus),
+    })),
   setProfileField: (field, value) =>
     set((state) => {
       if (PRO_ONLY_COLOR_FIELDS.has(field) && !hasProAccess(state.userStatus)) {
@@ -231,10 +132,7 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
     }),
   setUserStatus: (status) =>
     set((state) => {
-      const nextUserStatus = {
-        ...state.userStatus,
-        ...status,
-      };
+      const nextUserStatus = { ...state.userStatus, ...status };
 
       return {
         userStatus: nextUserStatus,
@@ -261,9 +159,7 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
     set((state) => ({
       profileData: {
         ...state.profileData,
-        links: state.profileData.links.map((item) =>
-          item.id === id ? ({ ...item, ...(patch as Partial<typeof item>) } as BuilderItem) : item,
-        ),
+        links: state.profileData.links.map((item) => (item.id === id ? ({ ...item, ...(patch as Partial<typeof item>) } as BuilderItem) : item)),
       },
     })),
   removeLink: (id) =>
@@ -287,7 +183,22 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
       }
 
       return {
-        profileData: applyThemePreset(state.profileData, theme),
+        profileData: sanitizeProfileData(
+          {
+            ...state.profileData,
+            selectedTheme: theme,
+            backgroundColor: theme.backgroundColor,
+            surfaceColor: theme.surfaceColor,
+            accentColor: theme.accentColor,
+            sectionBadgeColor: theme.accentColor,
+            nameColor: theme.textColor,
+            bioColor: theme.mutedTextColor,
+            sectionTitleColor: theme.textColor,
+            cardTitleColor: theme.textColor,
+            mutedTextColor: theme.mutedTextColor,
+          },
+          state.userStatus,
+        ),
       };
     }),
   setFont: (font) =>
@@ -338,8 +249,7 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
     })),
   saveProfile: () =>
     set((state) => {
-      const nextPublishedProfile = cloneProfileData(sanitizeProfileData(state.profileData, state.userStatus));
-      persistPublishedProfileData(nextPublishedProfile);
+      const nextPublishedProfile = sanitizeProfileData(cloneProfileData(state.profileData), state.userStatus);
 
       return {
         profileData: cloneProfileData(nextPublishedProfile),
@@ -347,16 +257,9 @@ export const useBuilderStore = create<BuilderStore>((set) => ({
       };
     }),
   resetBuilder: () =>
-    set(() => {
-      const nextDefaultProfile = createDefaultProfileData();
-      persistPublishedProfileData(nextDefaultProfile);
-
-      return {
-        profileData: cloneProfileData(nextDefaultProfile),
-        publishedProfileData: nextDefaultProfile,
-        userStatus: defaultUserStatus,
-      };
-    }),
+    set(() => ({
+      ...createInitialState(),
+    })),
 }));
 
 export const builderSelectors = {
@@ -369,7 +272,7 @@ export const builderSelectors = {
   canAddMoreProducts: (state: BuilderStore) => hasProAccess(state.userStatus) || state.profileData.links.filter((item) => item.type === 'product').length < MAX_FREE_PRODUCTS,
   mustShowWatermark: (state: BuilderStore) => !hasProAccess(state.userStatus) || state.profileData.watermarkEnabled,
   publishedMustShowWatermark: (state: BuilderStore) => !hasProAccess(state.userStatus) || state.publishedProfileData.watermarkEnabled,
-  hasUnsavedChanges: (state: BuilderStore) => !areProfilesEqual(state.profileData, state.publishedProfileData),
+  hasUnsavedChanges: (state: BuilderStore) => JSON.stringify(state.profileData) !== JSON.stringify(state.publishedProfileData),
   availableThemes: () => THEME_PRESETS,
   availableFonts: () => FONT_PRESETS,
   availableCardStyles: () => CARD_STYLE_PRESETS,

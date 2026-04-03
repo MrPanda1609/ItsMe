@@ -203,8 +203,8 @@ export function LinksProductsPanel() {
 
         <div className="rounded-[24px] border border-gray-200 bg-gray-50 px-4 py-3 text-xs leading-6 text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400">
           {hasProAccess
-            ? 'Gói Pro có thể thêm sản phẩm không giới hạn.'
-            : `Gói miễn phí chỉ thêm tối đa ${3} sản phẩm. Hiện tại bạn đang dùng ${productCount}/${3}. Muốn thêm nhiều hơn hãy nâng cấp Pro.`}
+            ? 'Pro có thể thêm sản phẩm không giới hạn.'
+            : `Free chỉ thêm tối đa ${3} sản phẩm. Hiện tại bạn đang dùng ${productCount}/${3}. Muốn thêm nhiều hơn hãy nâng cấp Pro.`}
         </div>
 
         {links.length === 0 ? (

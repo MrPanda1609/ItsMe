@@ -164,7 +164,6 @@ export function AppearancePanel() {
   const setTheme = useBuilderStore((state) => state.setTheme);
   const setFont = useBuilderStore((state) => state.setFont);
   const setWatermarkEnabled = useBuilderStore((state) => state.setWatermarkEnabled);
-  const setUserStatus = useBuilderStore((state) => state.setUserStatus);
   const setProfileField = useBuilderStore((state) => state.setProfileField);
 
   return (
@@ -256,33 +255,6 @@ export function AppearancePanel() {
               <Switch checked={!mustShowWatermark} disabled={!hasProAccess} onCheckedChange={(checked) => setWatermarkEnabled(!checked)} />
             </div>
             <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">Trạng thái hiện tại: {mustShowWatermark ? 'Đang hiển thị trên hồ sơ' : 'Đã ẩn trong bản xem thử / trang công khai'}</p>
-          </div>
-        </div>
-      </BuilderPanelSection>
-
-      <BuilderPanelSection title="Môi trường kiểm thử quyền truy cập" description="Dùng tạm để kiểm tra trạng thái miễn phí, Pro và quản trị trước khi nối auth thật.">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-4 rounded-[24px] border border-gray-200 bg-gray-50 px-4 py-3 dark:border-white/10 dark:bg-white/[0.04]">
-            <div>
-              <p className="text-sm font-semibold text-slate-900 dark:text-white">Gói Pro</p>
-              <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Mở khoá preset nâng cao, font nâng cao và quyền tắt watermark.</p>
-            </div>
-            <Switch checked={userStatus.isPro} onCheckedChange={(checked) => setUserStatus({ isPro: checked })} />
-          </div>
-
-          <div className="flex items-center justify-between gap-4 rounded-[24px] border border-gray-200 bg-gray-50 px-4 py-3 dark:border-white/10 dark:bg-white/[0.04]">
-            <div>
-              <p className="text-sm font-semibold text-slate-900 dark:text-white">Quyền quản trị</p>
-              <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Bỏ qua mọi giới hạn trả phí để test nhanh giao diện cao cấp.</p>
-            </div>
-            <Switch checked={userStatus.isAdmin} onCheckedChange={(checked) => setUserStatus({ isAdmin: checked })} />
-          </div>
-
-          <div className="flex items-center justify-between rounded-[24px] border border-gray-200 bg-white px-4 py-3 text-xs text-slate-500 shadow-sm dark:border-white/10 dark:bg-[#111111] dark:text-slate-300">
-            <span>Quyền hiệu lực</span>
-            <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-white">
-              {hasProAccess ? 'Pro / Quản trị' : 'Người dùng miễn phí'}
-            </span>
           </div>
         </div>
       </BuilderPanelSection>

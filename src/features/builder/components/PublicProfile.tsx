@@ -202,7 +202,7 @@ function ProductCard({ item, mode, cardStyle, profileData }: { item: BuilderProd
 export function PublicProfile({ profileData, mustShowWatermark, mode = 'public', className }: PublicProfileProps) {
   const visibleItems = profileData.links.filter((item) => item.enabled);
   const visibleSocialLinks = socialPlatformMeta.filter(({ key }) => profileData.socialLinks[key].trim());
-  const coverImage = profileData.coverImage ?? profileData.avatar ?? '/home.png';
+  const coverImage = profileData.coverImage ?? profileData.avatar;
   const cardRadius = radiusTokenToValue(profileData.shapeStyle.cardRadius);
   const cardStyle: CSSProperties = {
     borderRadius: cardRadius,
@@ -230,12 +230,27 @@ export function PublicProfile({ profileData, mustShowWatermark, mode = 'public',
       <div className="relative h-full overflow-y-auto hidden-scrollbar">
         <div className="min-h-full pb-10">
           <div className="relative h-[320px] overflow-hidden">
-            <img
-              src={coverImage}
-              alt={profileData.displayName}
-              className="h-full w-full object-cover"
-              style={{ objectPosition: `${profileData.coverImagePositionX}% ${profileData.coverImagePositionY}%` }}
-            />
+            {coverImage ? (
+              <img
+                src={coverImage}
+                alt={profileData.displayName}
+                className="h-full w-full object-cover"
+                style={{ objectPosition: `${profileData.coverImagePositionX}% ${profileData.coverImagePositionY}%` }}
+              />
+            ) : (
+              <div
+                className="flex h-full w-full items-center justify-center px-8 text-center"
+                style={{
+                  background: `linear-gradient(135deg, ${withAlpha(profileData.accentColor, 0.16)}, ${withAlpha(profileData.backgroundColor, 0.96)})`,
+                  color: profileData.mutedTextColor,
+                }}
+              >
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.34em]">Ảnh nổi bật</p>
+                  <p className="mt-3 text-sm leading-7">Thêm ảnh cover trong builder để profile công khai nổi bật hơn.</p>
+                </div>
+              </div>
+            )}
             <div
               className="absolute inset-0"
               style={{

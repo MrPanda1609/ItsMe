@@ -38,6 +38,8 @@ function CoverPositionEditor({
     const dragState = dragRef.current;
     if (!dragState || dragState.pointerId !== event.pointerId) return;
 
+    event.preventDefault();
+
     const rect = event.currentTarget.getBoundingClientRect();
     const deltaX = ((event.clientX - dragState.startX) / rect.width) * 100;
     const deltaY = ((event.clientY - dragState.startY) / rect.height) * 100;
@@ -64,7 +66,7 @@ function CoverPositionEditor({
       </div>
 
       <div
-        className="relative h-56 overflow-hidden rounded-[28px] border border-dashed border-gray-200 bg-gray-50 touch-none dark:border-white/10 dark:bg-white/[0.04]"
+        className="relative mx-auto aspect-[17/16] w-full max-w-[360px] overflow-hidden rounded-[28px] border border-dashed border-gray-200 bg-gray-50 touch-none select-none dark:border-white/10 dark:bg-white/[0.04]"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={clearDrag}
@@ -144,7 +146,11 @@ export function ProfileInfoPanel() {
             label="Ảnh nổi bật"
             hint="Ảnh này sẽ nằm ở phần đầu profile, giống template ngoài landing page. Bạn có thể tải máy lên hoặc dán URL ảnh vào."
             value={coverImage}
-            onChange={(value) => setProfileField('coverImage', value)}
+            onChange={(value) => {
+              setProfileField('coverImage', value);
+              setProfileField('coverImagePositionX', 50);
+              setProfileField('coverImagePositionY', 50);
+            }}
             placeholder="Xem trước ảnh nổi bật"
             previewWrapperClassName="aspect-[3/4] max-w-[180px]"
             imageClassName="object-cover"

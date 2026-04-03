@@ -1,35 +1,100 @@
+import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
 import { PublicProfile } from '../components/PublicProfile';
+import { getPublicProfile } from '../api/profileRepository';
+import { createDefaultProfileData } from '../config/defaultProfileData';
 import { useAppExperience } from '../../../providers/AppExperienceProvider';
-import { builderSelectors, useBuilderStore } from '../store/useBuilderStore';
 
 export function PublicProfilePage() {
-  const profileData = useBuilderStore(builderSelectors.publishedProfileData);
-  const mustShowWatermark = useBuilderStore(builderSelectors.publishedMustShowWatermark);
   const { mode } = useAppExperience();
+  const isConfigured = Boolean(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
   const isDark = mode === 'dark';
+  const [profileData, setProfileData] = useState(createDefaultProfileData());
+  const [mustShowWatermark, setMustShowWatermark] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const requestedUserId = useMemo(() => {
+    const segments = window.location.pathname.split('/').filter(Boolean);
+    return segments[1] ?? '';
+  }, []);
+
+  useEffect(() => {
+    if (!requestedUserId) {
+      setError('Không tìm thấy id profile để hiển thị.');
+      setLoading(false);
+      return;
+    }
+
+    if (!isConfigured) {
+      setError('Chưa cấu hình Supabase nên chưa thể tải profile công khai.');
+      setLoading(false);
+      return;
+    }
+
+    let active = true;
+    setLoading(true);
+    setError('');
+
+    getPublicProfile(requestedUserId)
+      .then((result) => {
+        if (!active) return;
+
+        if (!result) {
+          setError('Không tìm thấy profile công khai cho tài khoản này.');
+          return;
+        }
+
+        setProfileData(result.publishedProfileData);
+        setMustShowWatermark(!result.userStatus.isPro || result.publishedProfileData.watermarkEnabled);
+      })
+      .catch(() => {
+        if (!active) return;
+        setError('Không thể tải profile công khai. Vui lòng kiểm tra cấu hình Supabase và schema.');
+      })
+      .finally(() => {
+        if (!active) return;
+        setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isConfigured, requestedUserId]);
 
   return (
-    <main className="min-h-[100dvh] px-4 py-6 md:px-8 md:py-10" style={{ background: isDark ? 'radial-gradient(circle_at_top, rgba(251,113,133,0.16), transparent 24%), linear-gradient(180deg, #09090b 0%, #111114 100%)' : 'radial-gradient(circle_at_top, rgba(251,113,133,0.14), transparent 24%), linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)' }}>
-      <div className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-6xl flex-col gap-6 md:min-h-[calc(100dvh-5rem)] md:justify-center">
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-[28px] border border-gray-200 bg-white px-5 py-4 shadow-sm dark:border-white/10 dark:bg-[#111111]">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.32em] text-rose-500 dark:text-rose-300">Trang công khai</p>
-            <h1 className="mt-2 text-xl font-semibold text-slate-900 dark:text-white">Bản xem công khai trên điện thoại</h1>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <a
-              href="/editor"
-              className="inline-flex h-11 items-center justify-center rounded-2xl border border-gray-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/[0.08]"
-            >
-              Quay lại trình chỉnh sửa
-            </a>
+    <main
+      className="min-h-[100dvh]"
+      style={{
+        background: isDark
+          ? 'radial-gradient(circle_at_top, rgba(251,113,133,0.16), transparent 24%), linear-gradient(180deg, #09090b 0%, #111114 100%)'
+          : 'radial-gradient(circle_at_top, rgba(251,113,133,0.14), transparent 24%), linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+      }}
+    >
+      {loading ? (
+        <div className="flex min-h-[100dvh] items-center justify-center px-6 text-center text-sm text-slate-500 dark:text-slate-400">
+          <div className="rounded-[28px] border border-gray-200 bg-white px-5 py-10 shadow-sm dark:border-white/10 dark:bg-[#111111]">
+            Đang tải profile công khai...
           </div>
         </div>
-
-        <div className="mx-auto w-full md:max-w-[430px] md:overflow-hidden md:rounded-[40px] md:border md:border-gray-200 md:shadow-[0_25px_70px_rgba(15,23,42,0.12)] dark:md:border-white/10 dark:md:shadow-[0_25px_70px_rgba(0,0,0,0.35)]">
-          <PublicProfile profileData={profileData} mustShowWatermark={mustShowWatermark} className="min-h-[100dvh] md:min-h-[844px]" />
+      ) : error ? (
+        <div className="flex min-h-[100dvh] items-center justify-center px-6 text-center text-sm text-rose-600 dark:text-rose-200">
+          <div className="rounded-[28px] border border-rose-200 bg-white px-5 py-10 shadow-sm dark:border-rose-500/30 dark:bg-[#111111]">
+            {error}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex min-h-[100dvh] items-center justify-center px-0 py-0 md:px-6 md:py-8">
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full md:max-w-[430px] md:overflow-hidden md:rounded-[42px] md:border md:border-white/10 md:shadow-[0_28px_80px_rgba(2,6,23,0.26)]"
+          >
+            <PublicProfile profileData={profileData} mustShowWatermark={mustShowWatermark} className="min-h-[100dvh] md:min-h-[844px]" />
+          </motion.div>
+        </div>
+      )}
     </main>
   );
 }
