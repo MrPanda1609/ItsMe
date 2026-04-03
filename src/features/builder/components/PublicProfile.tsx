@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowUpRight, Sparkles, X } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import { cn } from '../../../lib/cn';
 import type { BuilderItem, BuilderProductItem, ProfileData, SocialLinks } from '../types';
@@ -9,6 +10,10 @@ interface PublicProfileProps {
   mustShowWatermark: boolean;
   mode?: 'preview' | 'public';
   className?: string;
+  brandPromoEnabled?: boolean;
+  promoOpen?: boolean;
+  onPromoOpen?: () => void;
+  onPromoClose?: () => void;
 }
 
 const cardTransition = { type: 'spring', stiffness: 120, damping: 18 } as const;
@@ -87,6 +92,51 @@ const socialPlatformMeta: Array<{
   { key: 'tiktok', label: 'TikTok', icon: TikTokGlyph },
   { key: 'zalo', label: 'Zalo', icon: ZaloGlyph },
 ];
+
+function BrandPromoModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="absolute inset-0 z-[70] flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, y: 18, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
+        className="relative w-full max-w-[88%] rounded-[2rem] border border-black/5 bg-white p-6 shadow-[0_30px_80px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-[#111111]"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/5 bg-white text-slate-500 transition hover:bg-gray-50 dark:border-white/10 dark:bg-white/[0.05] dark:text-slate-300 dark:hover:bg-white/[0.08]"
+          aria-label="Đóng popup quảng bá"
+        >
+          <X className="h-4 w-4" strokeWidth={1.8} />
+        </button>
+
+        <span className="inline-flex rounded-full bg-rose-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-rose-500 dark:bg-white/10 dark:text-rose-300">
+          Tạo với ItsMe
+        </span>
+        <h2 className="mt-5 pr-10 text-[1.65rem] font-semibold tracking-[-0.05em] text-slate-900 dark:text-white">Muốn có profile đẹp như thế này?</h2>
+        <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-400">Tạo storefront KOC của riêng bạn với giao diện đẹp, link public riêng và bộ chỉnh sửa trực quan bằng ItsMe.</p>
+
+        <div className="mt-6 flex flex-col gap-3">
+          <a
+            href="/"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-rose-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"
+          >
+            Khám phá ItsMe
+            <ArrowUpRight className="h-4 w-4" strokeWidth={1.8} />
+          </a>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center justify-center rounded-full border border-black/5 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-gray-50 dark:border-white/10 dark:bg-white/[0.05] dark:text-white dark:hover:bg-white/[0.08]"
+          >
+            Đóng
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
 
 function LinkCard({ item, mode, cardStyle, profileData }: { item: BuilderItem; mode: 'preview' | 'public'; cardStyle: CSSProperties; profileData: ProfileData }) {
   return (
@@ -199,7 +249,16 @@ function ProductCard({ item, mode, cardStyle, profileData }: { item: BuilderProd
   );
 }
 
-export function PublicProfile({ profileData, mustShowWatermark, mode = 'public', className }: PublicProfileProps) {
+export function PublicProfile({
+  profileData,
+  mustShowWatermark,
+  mode = 'public',
+  className,
+  brandPromoEnabled = false,
+  promoOpen = false,
+  onPromoOpen,
+  onPromoClose,
+}: PublicProfileProps) {
   const visibleItems = profileData.links.filter((item) => item.enabled);
   const visibleSocialLinks = socialPlatformMeta.filter(({ key }) => profileData.socialLinks[key].trim());
   const coverImage = profileData.coverImage ?? profileData.avatar;
@@ -221,6 +280,20 @@ export function PublicProfile({ profileData, mustShowWatermark, mode = 'public',
         fontFamily: profileData.selectedFont.family,
       }}
     >
+      {brandPromoEnabled && mode === 'public' ? (
+        <button
+          type="button"
+          onClick={onPromoOpen}
+          className="absolute right-4 top-4 z-[60] inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/5 bg-white/90 text-rose-500 shadow-[0_18px_42px_rgba(15,23,42,0.14)] backdrop-blur transition hover:scale-[1.02] hover:bg-white dark:border-white/10 dark:bg-white/[0.08] dark:text-rose-300 dark:hover:bg-white/[0.12]"
+          aria-label="Mở quảng bá ItsMe"
+          title="Khám phá ItsMe"
+        >
+          <Sparkles className="h-4 w-4" strokeWidth={1.9} />
+        </button>
+      ) : null}
+
+      {brandPromoEnabled && promoOpen && mode === 'public' && onPromoClose ? <BrandPromoModal onClose={onPromoClose} /> : null}
+
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute inset-x-0 bottom-0 h-[48%]" style={{ background: `linear-gradient(180deg, ${withAlpha(profileData.backgroundColor, 0)} 0%, ${profileData.backgroundColor} 100%)` }} />
         <div className="absolute left-[-40px] top-[34%] h-44 w-44 rounded-full blur-3xl" style={{ backgroundColor: withAlpha(profileData.accentColor, 0.14) }} />
