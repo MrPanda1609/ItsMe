@@ -102,6 +102,7 @@ export interface ProfileData {
   selectedFont: FontPreset;
   cardStyle: CardStyleOption;
   shapeStyle: ShapeStyleOption;
+  brandPromoEnabled: boolean;
   watermarkEnabled: boolean;
 }
 

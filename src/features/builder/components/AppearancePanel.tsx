@@ -161,6 +161,7 @@ export function AppearancePanel() {
   const userStatus = useBuilderStore(builderSelectors.userStatus);
   const hasProAccess = useBuilderStore(builderSelectors.hasProAccess);
   const mustShowWatermark = useBuilderStore(builderSelectors.mustShowWatermark);
+  const brandPromoEnabled = useBuilderStore((state) => state.profileData.brandPromoEnabled);
   const setTheme = useBuilderStore((state) => state.setTheme);
   const setFont = useBuilderStore((state) => state.setFont);
   const setWatermarkEnabled = useBuilderStore((state) => state.setWatermarkEnabled);
@@ -255,6 +256,17 @@ export function AppearancePanel() {
               <Switch checked={!mustShowWatermark} disabled={!hasProAccess} onCheckedChange={(checked) => setWatermarkEnabled(!checked)} />
             </div>
             <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">Trạng thái hiện tại: {mustShowWatermark ? 'Đang hiển thị trên hồ sơ' : 'Đã ẩn trong bản xem thử / trang công khai'}</p>
+          </div>
+
+          <div className="rounded-[28px] border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Popup quảng bá ItsMe</h3>
+                <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Bản Free sẽ tự hiện popup quảng bá và nút góc phải trên ở trang public. Pro hoặc Admin có thể tắt.</p>
+              </div>
+              <Switch checked={brandPromoEnabled} disabled={!hasProAccess} onCheckedChange={(checked) => setProfileField('brandPromoEnabled', checked)} />
+            </div>
+            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">Trạng thái hiện tại: {hasProAccess ? (brandPromoEnabled ? 'Đang hiển thị trên trang public' : 'Đã tắt trên trang public') : 'Free bắt buộc hiển thị trên trang public'}</p>
           </div>
         </div>
       </BuilderPanelSection>

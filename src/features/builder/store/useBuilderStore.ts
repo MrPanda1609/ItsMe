@@ -83,6 +83,7 @@ const sanitizeProfileData = (profileData: ProfileData, userStatus: UserStatus): 
     sectionTitleColor: proAccess ? profileData.sectionTitleColor : selectedTheme.textColor,
     cardTitleColor: proAccess ? profileData.cardTitleColor : selectedTheme.textColor,
     mutedTextColor: proAccess ? profileData.mutedTextColor : selectedTheme.mutedTextColor,
+    brandPromoEnabled: proAccess ? profileData.brandPromoEnabled : true,
     watermarkEnabled: proAccess ? profileData.watermarkEnabled : true,
   };
 };
