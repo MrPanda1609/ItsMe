@@ -34,7 +34,7 @@ const featureItems = [
 
 const pricingPlans = {
   free: ['Trình tạo profile cơ bản', 'Chỉnh màu nền, thẻ và màu nhấn', 'Tối đa 3 sản phẩm', 'Watermark ItsMe'],
-  pro: ['Toàn bộ tính năng gói Miễn phí', 'Mở khóa toàn bộ bảng màu', 'Thêm sản phẩm không giới hạn', 'Tắt watermark', 'Các tính năng nâng cao sẽ mở thêm sau'],
+  pro: ['Toàn bộ tính năng gói Miễn phí', 'Mở khóa toàn bộ bảng màu', 'Thêm sản phẩm không giới hạn', 'Tắt watermark', 'Sử dụng nhiều theme mới và độc đáo nhất', 'Ưu tiên sử dụng tính năng mới'],
 };
 
 function SectionHeading({
