@@ -1,5 +1,6 @@
 export type BuilderBlockType = 'link' | 'product';
 export type UserPlan = 'free' | 'pro' | 'admin';
+export type ProfileTemplateId = 'cover-story' | 'avatar-circle' | 'editorial-poster';
 
 export interface ThemePreset {
   id: string;
@@ -78,6 +79,7 @@ export interface ProfileData {
   coverImage: string | null;
   coverImagePositionX: number;
   coverImagePositionY: number;
+  profileTemplate: ProfileTemplateId;
   socialLinks: SocialLinks;
   displayName: string;
   bio: string;

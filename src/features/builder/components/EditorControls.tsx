@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import { cn } from '../../../lib/cn';
 import { AppearancePanel } from './AppearancePanel';
 import { LinksProductsPanel } from './LinksProductsPanel';
 import { ProfileInfoPanel } from './ProfileInfoPanel';
+import { builderSelectors, useBuilderStore } from '../store/useBuilderStore';
 
 type BuilderTab = 'profile' | 'links' | 'appearance';
 
@@ -13,7 +13,8 @@ const tabs: Array<{ id: BuilderTab; label: string; description: string }> = [
 ];
 
 export function EditorControls() {
-  const [activeTab, setActiveTab] = useState<BuilderTab>('profile');
+  const activeTab = useBuilderStore(builderSelectors.activeTab);
+  const setActiveTab = useBuilderStore((state) => state.setActiveTab);
 
   return (
     <div className="space-y-5">
@@ -42,9 +43,15 @@ export function EditorControls() {
         </div>
       </div>
 
-      {activeTab === 'profile' ? <ProfileInfoPanel /> : null}
-      {activeTab === 'links' ? <LinksProductsPanel /> : null}
-      {activeTab === 'appearance' ? <AppearancePanel /> : null}
+      <div className={cn(activeTab === 'profile' ? 'block' : 'hidden')} aria-hidden={activeTab !== 'profile'}>
+        <ProfileInfoPanel />
+      </div>
+      <div className={cn(activeTab === 'links' ? 'block' : 'hidden')} aria-hidden={activeTab !== 'links'}>
+        <LinksProductsPanel />
+      </div>
+      <div className={cn(activeTab === 'appearance' ? 'block' : 'hidden')} aria-hidden={activeTab !== 'appearance'}>
+        <AppearancePanel />
+      </div>
     </div>
   );
 }

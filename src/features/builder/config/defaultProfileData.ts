@@ -8,6 +8,7 @@ export const createDefaultProfileData = (): ProfileData => ({
   coverImage: null,
   coverImagePositionX: 50,
   coverImagePositionY: 50,
+  profileTemplate: 'cover-story',
   socialLinks: {
     facebook: '',
     instagram: '',

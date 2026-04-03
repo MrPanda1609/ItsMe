@@ -1,6 +1,7 @@
 import { supabase } from '../../../lib/supabase';
 import { createDefaultProfileData, mergeProfileDataWithDefaults, normalizePlan, userStatusFromPlan } from '../config/defaultProfileData';
 import type { ProfileData, UserPlan, UserStatus } from '../types';
+import { getFreeCompatibleProfile, hasProAccess } from '../utils/proFeatureAccess';
 
 interface ProfileRow {
   user_id: string;
@@ -46,12 +47,14 @@ const resolvePlanForEmail = (email: string | undefined, fallbackPlan: UserPlan):
 
 const mapProfileRow = (row: ProfileRow, email?: string): BuilderProfilePayload => {
   const plan = resolvePlanForEmail(email, row.plan);
+  const userStatus = userStatusFromPlan(plan);
+  const publishedProfileData = mergeProfileDataWithDefaults(row.published_profile);
 
   return {
     userId: row.user_id,
     draftProfileData: mergeProfileDataWithDefaults(row.draft_profile),
-    publishedProfileData: mergeProfileDataWithDefaults(row.published_profile),
-    userStatus: userStatusFromPlan(plan),
+    publishedProfileData: hasProAccess(userStatus) ? publishedProfileData : getFreeCompatibleProfile(publishedProfileData),
+    userStatus,
     plan,
   };
 };
@@ -149,11 +152,13 @@ export async function getPublicProfile(userId: string) {
   }
 
   const plan = normalizePlan(row.plan);
+  const userStatus = userStatusFromPlan(plan);
+  const publishedProfileData = mergeProfileDataWithDefaults(row.published_profile);
 
   return {
     userId: row.user_id,
-    publishedProfileData: mergeProfileDataWithDefaults(row.published_profile),
-    userStatus: userStatusFromPlan(plan),
+    publishedProfileData: hasProAccess(userStatus) ? publishedProfileData : getFreeCompatibleProfile(publishedProfileData),
+    userStatus,
     plan,
   };
 }

@@ -1,6 +1,8 @@
 import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { memo } from 'react';
+import { useState } from 'react';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Switch } from '../../../components/ui/switch';
@@ -156,7 +158,7 @@ function ProductCardInput({ item }: { item: BuilderProductItem }) {
   );
 }
 
-export function LinksProductsPanel() {
+export const LinksProductsPanel = memo(function LinksProductsPanel() {
   const links = useBuilderStore((state) => state.profileData.links);
   const productCount = useBuilderStore(builderSelectors.productCount);
   const hasProAccess = useBuilderStore(builderSelectors.hasProAccess);
@@ -164,6 +166,7 @@ export function LinksProductsPanel() {
   const addLink = useBuilderStore((state) => state.addLink);
   const reorderLinks = useBuilderStore((state) => state.reorderLinks);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const [productLimitNotice, setProductLimitNotice] = useState('');
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -180,6 +183,16 @@ export function LinksProductsPanel() {
     }
   };
 
+  const handleAddProduct = () => {
+    if (!hasProAccess && productCount >= 3) {
+      setProductLimitNotice('Bản Free chỉ cho tối đa 3 sản phẩm. Bạn không thể thêm sản phẩm thứ 4.');
+      return;
+    }
+
+    setProductLimitNotice('');
+    addLink('product');
+  };
+
   return (
     <BuilderPanelSection
       eyebrow="Nội dung"
@@ -194,17 +207,24 @@ export function LinksProductsPanel() {
           <Button
             variant="outline"
             className="dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/[0.08]"
-            onClick={() => addLink('product')}
-            disabled={!canAddMoreProducts}
+            onClick={handleAddProduct}
           >
             + Thêm sản phẩm
           </Button>
         </div>
 
+        {productLimitNotice ? (
+          <div className="rounded-[24px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm leading-6 text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200">
+            {productLimitNotice}
+          </div>
+        ) : null}
+
         <div className="rounded-[24px] border border-gray-200 bg-gray-50 px-4 py-3 text-xs leading-6 text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400">
           {hasProAccess
             ? 'Pro có thể thêm sản phẩm không giới hạn.'
-            : `Free chỉ thêm tối đa ${3} sản phẩm. Hiện tại bạn đang dùng ${productCount}/${3}. Muốn thêm nhiều hơn hãy nâng cấp Pro.`}
+            : productCount > 3
+              ? `Bạn đang thử Pro với ${productCount} sản phẩm. Free chỉ lưu tối đa 3 sản phẩm khi cập nhật public.`
+              : `Free chỉ thêm tối đa ${3} sản phẩm khi cập nhật public. Hiện tại bạn đang dùng ${productCount}/${3}. Muốn thêm nhiều hơn hãy nâng cấp Pro.`}
         </div>
 
         {links.length === 0 ? (
@@ -225,4 +245,4 @@ export function LinksProductsPanel() {
       </div>
     </BuilderPanelSection>
   );
-}
+});

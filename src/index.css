@@ -69,6 +69,17 @@ a {
   background: rgba(203, 213, 225, 0.9);
 }
 
+html.landing-scrollbar-hidden,
+body.landing-scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html.landing-scrollbar-hidden::-webkit-scrollbar,
+body.landing-scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
 @layer utilities {
   .hidden-scrollbar {
     -ms-overflow-style: none;

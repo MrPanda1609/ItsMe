@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, useRef, useState } from 'react';
+import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from 'react';
 import {
   ArrowRight,
   BarChart3,
@@ -186,6 +186,16 @@ export function LandingPage() {
   const phoneDragRef = useRef<{ pointerId: number; startY: number; startScrollTop: number; moved: boolean } | null>(null);
   const suppressPhoneClickRef = useRef(false);
 
+  useEffect(() => {
+    document.documentElement.classList.add('landing-scrollbar-hidden');
+    document.body.classList.add('landing-scrollbar-hidden');
+
+    return () => {
+      document.documentElement.classList.remove('landing-scrollbar-hidden');
+      document.body.classList.remove('landing-scrollbar-hidden');
+    };
+  }, []);
+
   const handleLoginClick = (event: ReactMouseEvent<HTMLAnchorElement>) => {
     if (typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches) {
       event.preventDefault();
@@ -355,7 +365,7 @@ export function LandingPage() {
 
           <PricingCard
             title="Pro"
-            price="150,000"
+            price="149,000"
             description="Dành cho creator muốn mở toàn bộ quyền tùy biến màu sắc, đăng nhiều sản phẩm hơn và sẵn sàng đón các tính năng cao cấp sẽ bổ sung tiếp theo."
             features={pricingPlans.pro}
             cta="Nâng cấp lên Pro"

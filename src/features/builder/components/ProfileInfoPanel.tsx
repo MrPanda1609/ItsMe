@@ -1,4 +1,4 @@
-import { type PointerEvent as ReactPointerEvent, useRef } from 'react';
+import { memo, type PointerEvent as ReactPointerEvent, useRef } from 'react';
 import { Input } from '../../../components/ui/input';
 import { Textarea } from '../../../components/ui/textarea';
 import { useBuilderStore } from '../store/useBuilderStore';
@@ -111,7 +111,7 @@ function CoverPositionEditor({
   );
 }
 
-export function ProfileInfoPanel() {
+export const ProfileInfoPanel = memo(function ProfileInfoPanel() {
   const coverImage = useBuilderStore((state) => state.profileData.coverImage);
   const coverImagePositionX = useBuilderStore((state) => state.profileData.coverImagePositionX);
   const coverImagePositionY = useBuilderStore((state) => state.profileData.coverImagePositionY);
@@ -283,4 +283,4 @@ export function ProfileInfoPanel() {
       </BuilderPanelSection>
     </div>
   );
-}
+});

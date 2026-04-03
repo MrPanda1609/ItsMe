@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, Sparkles, X } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import { cn } from '../../../lib/cn';
-import type { BuilderItem, BuilderProductItem, ProfileData, SocialLinks } from '../types';
+import type { BuilderItem, BuilderProductItem, ProfileData, ProfileTemplateId, SocialLinks } from '../types';
 import { radiusTokenToValue, withAlpha } from '../utils/profileTheme';
 
 interface PublicProfileProps {
@@ -93,7 +93,260 @@ const socialPlatformMeta: Array<{
   { key: 'zalo', label: 'Zalo', icon: ZaloGlyph },
 ];
 
-function BrandPromoModal({ onClose }: { onClose: () => void }) {
+function ProfileMediaPlaceholder({ profileData, circular = false }: { profileData: ProfileData; circular?: boolean }) {
+  return (
+    <div
+      className={cn('flex h-full w-full items-center justify-center text-center', circular ? 'rounded-full px-4' : 'px-8')}
+      style={{
+        background: `linear-gradient(135deg, ${withAlpha(profileData.accentColor, 0.16)}, ${withAlpha(profileData.backgroundColor, 0.96)})`,
+        color: profileData.mutedTextColor,
+      }}
+    >
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.34em]">Ảnh nổi bật</p>
+        <p className="mt-3 text-sm leading-7">Thêm ảnh cover trong builder để profile công khai nổi bật hơn.</p>
+      </div>
+    </div>
+  );
+}
+
+function ProfileImageBlock({
+  profileData,
+  coverImage,
+  className,
+  circular = false,
+}: {
+  profileData: ProfileData;
+  coverImage: string | null;
+  className: string;
+  circular?: boolean;
+}) {
+  return (
+    <div className={className}>
+      {coverImage ? (
+        <img
+          src={coverImage}
+          alt={profileData.displayName}
+          className="h-full w-full object-cover"
+          style={{ objectPosition: `${profileData.coverImagePositionX}% ${profileData.coverImagePositionY}%` }}
+        />
+      ) : (
+        <ProfileMediaPlaceholder profileData={profileData} circular={circular} />
+      )}
+    </div>
+  );
+}
+
+function SocialButtons({
+  visibleSocialLinks,
+  profileData,
+  mode,
+  align = 'center',
+}: {
+  visibleSocialLinks: Array<{ key: keyof SocialLinks; label: string; icon: () => JSX.Element }>;
+  profileData: ProfileData;
+  mode: 'preview' | 'public';
+  align?: 'center' | 'left';
+}) {
+  if (visibleSocialLinks.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className={cn('mt-7 flex flex-wrap items-center gap-3', align === 'center' ? 'justify-center' : 'justify-start')}>
+      {visibleSocialLinks.map(({ key, label, icon: Icon }) => (
+        <a
+          key={key}
+          href={normalizeExternalUrl(profileData.socialLinks[key])}
+          target={mode === 'public' ? '_blank' : undefined}
+          rel={mode === 'public' ? 'noreferrer' : undefined}
+          onClick={mode === 'preview' ? (event) => event.preventDefault() : undefined}
+          aria-label={label}
+          className="flex h-12 w-12 items-center justify-center rounded-full border"
+          style={{
+            color: profileData.accentColor,
+            borderColor: withAlpha(profileData.accentColor, 0.16),
+            backgroundColor: profileData.surfaceColor,
+            boxShadow: `0 12px 30px ${withAlpha(profileData.accentColor, 0.18)}`,
+          }}
+        >
+          <Icon />
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function ProfileIdentity({
+  profileData,
+  align = 'center',
+  compact = false,
+  visibleSocialLinks,
+  mode,
+}: {
+  profileData: ProfileData;
+  align?: 'center' | 'left';
+  compact?: boolean;
+  visibleSocialLinks: Array<{ key: keyof SocialLinks; label: string; icon: () => JSX.Element }>;
+  mode: 'preview' | 'public';
+}) {
+  return (
+    <div className={cn('flex flex-col', align === 'center' ? 'items-center text-center' : 'items-start text-left')}>
+      <h1
+        className={cn('break-words font-bold tracking-[-0.06em]', compact ? 'mt-0' : 'mt-4')}
+        style={{
+          color: profileData.nameColor,
+          fontSize: profileData.displayNameSize,
+          lineHeight: 1.08,
+        }}
+      >
+        {profileData.displayName || 'Tên KOC của bạn'}
+      </h1>
+
+      <p
+        className={cn('mt-3 whitespace-pre-line', align === 'center' ? 'max-w-[26ch]' : 'max-w-[28ch]')}
+        style={{
+          color: profileData.bioColor,
+          fontSize: profileData.bioSize,
+          lineHeight: 1.75,
+        }}
+      >
+        {profileData.bio || 'Hãy mô tả ngắn gọn về bạn, nội dung bạn chia sẻ và sản phẩm bạn review.'}
+      </p>
+
+      <SocialButtons visibleSocialLinks={visibleSocialLinks} profileData={profileData} mode={mode} align={align} />
+    </div>
+  );
+}
+
+function ProfileSection({
+  profileData,
+  visibleItems,
+  mode,
+  cardStyle,
+  align = 'center',
+}: {
+  profileData: ProfileData;
+  visibleItems: BuilderItem[];
+  mode: 'preview' | 'public';
+  cardStyle: CSSProperties;
+  align?: 'center' | 'left';
+}) {
+  return (
+    <section className="mt-8 px-3 pb-4">
+      <div className={cn(align === 'center' ? 'text-center' : 'text-left')}>
+        <span
+          className="inline-flex rounded-full px-4 py-2 font-semibold uppercase tracking-[0.26em]"
+          style={{
+            color: profileData.sectionBadgeColor,
+            backgroundColor: withAlpha(profileData.accentColor, 0.08),
+            boxShadow: `inset 0 0 0 1px ${withAlpha(profileData.accentColor, 0.14)}`,
+            fontSize: profileData.sectionBadgeSize,
+          }}
+        >
+          {profileData.sectionBadge || 'Các bạn hãy tham khảo'}
+        </span>
+
+        <h2
+          className="mt-5 font-bold tracking-[-0.05em]"
+          style={{
+            color: profileData.sectionTitleColor,
+            fontSize: profileData.sectionTitleSize,
+            lineHeight: 1.18,
+          }}
+        >
+          {profileData.sectionTitle || 'Sản phẩm yêu thích của mình nhé!'}
+        </h2>
+      </div>
+
+      <div className="mt-6 space-y-5">
+        {visibleItems.length > 0 ? (
+          <AnimatePresence initial={false} mode="popLayout">
+            {visibleItems.map((item) =>
+              isProductItem(item) ? (
+                <ProductCard key={item.id} item={item} mode={mode} cardStyle={cardStyle} profileData={profileData} />
+              ) : (
+                <LinkCard key={item.id} item={item} mode={mode} cardStyle={cardStyle} profileData={profileData} />
+              ),
+            )}
+          </AnimatePresence>
+        ) : (
+          <motion.div layout transition={cardTransition} className="border px-5 py-6 text-left" style={cardStyle}>
+            <p className="text-sm font-semibold" style={{ color: profileData.sectionTitleColor }}>
+              Chưa có khối nội dung nào
+            </p>
+            <p className="mt-2 text-sm leading-6" style={{ color: profileData.mutedTextColor }}>
+              Hãy thêm link hoặc sản phẩm từ panel bên trái để hoàn thiện profile công khai của bạn.
+            </p>
+          </motion.div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function CoverStoryTemplate({ profileData, coverImage, visibleSocialLinks, mode }: { profileData: ProfileData; coverImage: string | null; visibleSocialLinks: Array<{ key: keyof SocialLinks; label: string; icon: () => JSX.Element }>; mode: 'preview' | 'public' }) {
+  return (
+    <>
+      <div className="relative h-[320px] overflow-hidden">
+        <ProfileImageBlock profileData={profileData} coverImage={coverImage} className="h-full w-full" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(180deg, ${withAlpha(profileData.backgroundColor, 0)} 24%, ${withAlpha(profileData.backgroundColor, 0.16)} 48%, ${withAlpha(profileData.backgroundColor, 0.94)} 82%, ${profileData.backgroundColor} 100%)`,
+          }}
+        />
+        <div className="absolute bottom-[-34px] left-1/2 h-28 w-[88%] -translate-x-1/2 rounded-full blur-3xl" style={{ backgroundColor: withAlpha(profileData.backgroundColor, 0.96) }} />
+      </div>
+
+      <div className="relative -mt-6 px-4">
+        <ProfileIdentity profileData={profileData} visibleSocialLinks={visibleSocialLinks} mode={mode} align="center" />
+      </div>
+    </>
+  );
+}
+
+function AvatarCircleTemplate({ profileData, coverImage, visibleSocialLinks, mode }: { profileData: ProfileData; coverImage: string | null; visibleSocialLinks: Array<{ key: keyof SocialLinks; label: string; icon: () => JSX.Element }>; mode: 'preview' | 'public' }) {
+  return (
+    <section className="px-4 pt-8">
+      <div
+        className="relative overflow-hidden rounded-[2.4rem] border px-5 pb-8 pt-6"
+        style={{
+          borderColor: profileData.selectedTheme.borderColor,
+          backgroundColor: withAlpha(profileData.surfaceColor, 0.94),
+          boxShadow: `0 24px 50px ${withAlpha(profileData.accentColor, 0.12)}`,
+        }}
+      >
+        <div className="absolute inset-x-8 top-0 h-24 rounded-b-full blur-3xl" style={{ backgroundColor: withAlpha(profileData.accentColor, 0.18) }} />
+        <div className="relative flex flex-col items-center text-center">
+          <div className="h-28 w-28 overflow-hidden rounded-full border-[4px] bg-white shadow-[0_18px_36px_rgba(15,23,42,0.14)]" style={{ borderColor: withAlpha(profileData.accentColor, 0.2) }}>
+            <ProfileImageBlock profileData={profileData} coverImage={coverImage} className="h-full w-full rounded-full" circular />
+          </div>
+
+          <ProfileIdentity profileData={profileData} visibleSocialLinks={visibleSocialLinks} mode={mode} align="center" compact />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EditorialPosterTemplate({ profileData, coverImage, visibleSocialLinks, mode }: { profileData: ProfileData; coverImage: string | null; visibleSocialLinks: Array<{ key: keyof SocialLinks; label: string; icon: () => JSX.Element }>; mode: 'preview' | 'public' }) {
+  return (
+    <section className="px-4 pt-6">
+      <div className="relative rounded-[2.4rem] border p-3" style={{ borderColor: profileData.selectedTheme.borderColor, backgroundColor: withAlpha(profileData.surfaceColor, 0.92), boxShadow: `0 24px 50px ${withAlpha(profileData.accentColor, 0.1)}` }}>
+        <div className="overflow-hidden rounded-[2rem] aspect-[4/5]">
+          <ProfileImageBlock profileData={profileData} coverImage={coverImage} className="h-full w-full" />
+        </div>
+
+        <div className="relative mx-2 -mt-12 rounded-[2rem] border px-5 pb-5 pt-4 shadow-[0_20px_40px_rgba(15,23,42,0.12)]" style={{ borderColor: withAlpha(profileData.accentColor, 0.12), backgroundColor: withAlpha(profileData.surfaceColor, 0.96) }}>
+          <ProfileIdentity profileData={profileData} visibleSocialLinks={visibleSocialLinks} mode={mode} align="left" compact />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BrandPromoModal({ profileData, onClose }: { profileData: ProfileData; onClose: () => void }) {
   return (
     <div className="absolute inset-0 z-[70] flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
       <motion.div
@@ -111,7 +364,13 @@ function BrandPromoModal({ onClose }: { onClose: () => void }) {
           <X className="h-4 w-4" strokeWidth={1.8} />
         </button>
 
-        <span className="inline-flex rounded-full bg-rose-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-rose-500 dark:bg-white/10 dark:text-rose-300">
+        <span
+          className="inline-flex rounded-full px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.28em]"
+          style={{
+            backgroundColor: withAlpha(profileData.accentColor, 0.12),
+            color: profileData.accentColor,
+          }}
+        >
           Tạo với ItsMe
         </span>
         <h2 className="mt-5 pr-10 text-[1.65rem] font-semibold tracking-[-0.05em] text-slate-900 dark:text-white">Muốn có profile đẹp như thế này?</h2>
@@ -120,7 +379,8 @@ function BrandPromoModal({ onClose }: { onClose: () => void }) {
         <div className="mt-6 flex flex-col gap-3">
           <a
             href="/"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-rose-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"
+            className="inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white transition"
+            style={{ backgroundColor: profileData.accentColor }}
           >
             Khám phá ItsMe
             <ArrowUpRight className="h-4 w-4" strokeWidth={1.8} />
@@ -262,6 +522,7 @@ export function PublicProfile({
   const visibleItems = profileData.links.filter((item) => item.enabled);
   const visibleSocialLinks = socialPlatformMeta.filter(({ key }) => profileData.socialLinks[key].trim());
   const coverImage = profileData.coverImage ?? profileData.avatar;
+  const activeTemplate: ProfileTemplateId = profileData.profileTemplate ?? 'avatar-circle';
   const cardRadius = radiusTokenToValue(profileData.shapeStyle.cardRadius);
   const cardStyle: CSSProperties = {
     borderRadius: cardRadius,
@@ -284,7 +545,11 @@ export function PublicProfile({
         <button
           type="button"
           onClick={onPromoOpen}
-          className="absolute right-4 top-4 z-[60] inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/5 bg-white/90 text-rose-500 shadow-[0_18px_42px_rgba(15,23,42,0.14)] backdrop-blur transition hover:scale-[1.02] hover:bg-white dark:border-white/10 dark:bg-white/[0.08] dark:text-rose-300 dark:hover:bg-white/[0.12]"
+          className="absolute right-4 top-4 z-[60] inline-flex h-11 w-11 items-center justify-center rounded-full border bg-white/90 shadow-[0_18px_42px_rgba(15,23,42,0.14)] backdrop-blur transition hover:scale-[1.02] hover:bg-white dark:bg-white/[0.08] dark:hover:bg-white/[0.12]"
+          style={{
+            borderColor: withAlpha(profileData.accentColor, 0.16),
+            color: profileData.accentColor,
+          }}
           aria-label="Mở quảng bá ItsMe"
           title="Khám phá ItsMe"
         >
@@ -292,7 +557,7 @@ export function PublicProfile({
         </button>
       ) : null}
 
-      {brandPromoEnabled && promoOpen && mode === 'public' && onPromoClose ? <BrandPromoModal onClose={onPromoClose} /> : null}
+      {brandPromoEnabled && promoOpen && mode === 'public' && onPromoClose ? <BrandPromoModal profileData={profileData} onClose={onPromoClose} /> : null}
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute inset-x-0 bottom-0 h-[48%]" style={{ background: `linear-gradient(180deg, ${withAlpha(profileData.backgroundColor, 0)} 0%, ${profileData.backgroundColor} 100%)` }} />
@@ -302,137 +567,15 @@ export function PublicProfile({
 
       <div className="relative h-full overflow-y-auto hidden-scrollbar">
         <div className="min-h-full pb-10">
-          <div className="relative h-[320px] overflow-hidden">
-            {coverImage ? (
-              <img
-                src={coverImage}
-                alt={profileData.displayName}
-                className="h-full w-full object-cover"
-                style={{ objectPosition: `${profileData.coverImagePositionX}% ${profileData.coverImagePositionY}%` }}
-              />
-            ) : (
-              <div
-                className="flex h-full w-full items-center justify-center px-8 text-center"
-                style={{
-                  background: `linear-gradient(135deg, ${withAlpha(profileData.accentColor, 0.16)}, ${withAlpha(profileData.backgroundColor, 0.96)})`,
-                  color: profileData.mutedTextColor,
-                }}
-              >
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.34em]">Ảnh nổi bật</p>
-                  <p className="mt-3 text-sm leading-7">Thêm ảnh cover trong builder để profile công khai nổi bật hơn.</p>
-                </div>
-              </div>
-            )}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: `linear-gradient(180deg, ${withAlpha(profileData.backgroundColor, 0)} 24%, ${withAlpha(profileData.backgroundColor, 0.16)} 48%, ${withAlpha(profileData.backgroundColor, 0.94)} 82%, ${profileData.backgroundColor} 100%)`,
-              }}
-            />
-            <div
-              className="absolute bottom-[-34px] left-1/2 h-28 w-[88%] -translate-x-1/2 rounded-full blur-3xl"
-              style={{ backgroundColor: withAlpha(profileData.backgroundColor, 0.96) }}
-            />
-          </div>
+          {activeTemplate === 'avatar-circle' ? (
+            <AvatarCircleTemplate profileData={profileData} coverImage={coverImage} visibleSocialLinks={visibleSocialLinks} mode={mode} />
+          ) : activeTemplate === 'editorial-poster' ? (
+            <EditorialPosterTemplate profileData={profileData} coverImage={coverImage} visibleSocialLinks={visibleSocialLinks} mode={mode} />
+          ) : (
+            <CoverStoryTemplate profileData={profileData} coverImage={coverImage} visibleSocialLinks={visibleSocialLinks} mode={mode} />
+          )}
 
-          <div className="relative -mt-6 flex flex-col items-center px-4 text-center">
-            <h1
-              className="mt-4 break-words font-bold tracking-[-0.06em]"
-              style={{
-                color: profileData.nameColor,
-                fontSize: profileData.displayNameSize,
-                lineHeight: 1.08,
-              }}
-            >
-              {profileData.displayName || 'Tên KOC của bạn'}
-            </h1>
-
-            <p
-              className="mt-3 max-w-[26ch] whitespace-pre-line"
-              style={{
-                color: profileData.bioColor,
-                fontSize: profileData.bioSize,
-                lineHeight: 1.75,
-              }}
-            >
-              {profileData.bio || 'Hãy mô tả ngắn gọn về bạn, nội dung bạn chia sẻ và sản phẩm bạn review.'}
-            </p>
-
-            {visibleSocialLinks.length > 0 ? (
-              <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-                {visibleSocialLinks.map(({ key, label, icon: Icon }) => (
-                  <a
-                    key={key}
-                    href={normalizeExternalUrl(profileData.socialLinks[key])}
-                    target={mode === 'public' ? '_blank' : undefined}
-                    rel={mode === 'public' ? 'noreferrer' : undefined}
-                    onClick={mode === 'preview' ? (event) => event.preventDefault() : undefined}
-                    aria-label={label}
-                    className="flex h-12 w-12 items-center justify-center rounded-full border"
-                    style={{
-                      color: profileData.accentColor,
-                      borderColor: withAlpha(profileData.accentColor, 0.16),
-                      backgroundColor: profileData.surfaceColor,
-                      boxShadow: `0 12px 30px ${withAlpha(profileData.accentColor, 0.18)}`,
-                    }}
-                  >
-                    <Icon />
-                  </a>
-                ))}
-              </div>
-            ) : null}
-          </div>
-
-          <section className="mt-8 px-3 pb-4">
-            <div className="text-center">
-              <span
-                className="inline-flex rounded-full px-4 py-2 font-semibold uppercase tracking-[0.26em]"
-                style={{
-                  color: profileData.sectionBadgeColor,
-                  backgroundColor: withAlpha(profileData.accentColor, 0.08),
-                  boxShadow: `inset 0 0 0 1px ${withAlpha(profileData.accentColor, 0.14)}`,
-                  fontSize: profileData.sectionBadgeSize,
-                }}
-              >
-                {profileData.sectionBadge || 'Các bạn hãy tham khảo'}
-              </span>
-
-              <h2
-                className="mt-5 font-bold tracking-[-0.05em]"
-                style={{
-                  color: profileData.sectionTitleColor,
-                  fontSize: profileData.sectionTitleSize,
-                  lineHeight: 1.18,
-                }}
-              >
-                {profileData.sectionTitle || 'Sản phẩm yêu thích của mình nhé!'}
-              </h2>
-            </div>
-
-            <div className="mt-6 space-y-5">
-              {visibleItems.length > 0 ? (
-                <AnimatePresence initial={false} mode="popLayout">
-                  {visibleItems.map((item) =>
-                    isProductItem(item) ? (
-                      <ProductCard key={item.id} item={item} mode={mode} cardStyle={cardStyle} profileData={profileData} />
-                    ) : (
-                      <LinkCard key={item.id} item={item} mode={mode} cardStyle={cardStyle} profileData={profileData} />
-                    ),
-                  )}
-                </AnimatePresence>
-              ) : (
-                <motion.div layout transition={cardTransition} className="border px-5 py-6 text-left" style={cardStyle}>
-                  <p className="text-sm font-semibold" style={{ color: profileData.sectionTitleColor }}>
-                    Chưa có khối nội dung nào
-                  </p>
-                  <p className="mt-2 text-sm leading-6" style={{ color: profileData.mutedTextColor }}>
-                    Hãy thêm link hoặc sản phẩm từ panel bên trái để hoàn thiện profile công khai của bạn.
-                  </p>
-                </motion.div>
-              )}
-            </div>
-          </section>
+          <ProfileSection profileData={profileData} visibleItems={visibleItems} mode={mode} cardStyle={cardStyle} align={activeTemplate === 'editorial-poster' ? 'left' : 'center'} />
 
           {mustShowWatermark ? (
             <footer className="mt-2 flex justify-center pb-2 pt-1">
