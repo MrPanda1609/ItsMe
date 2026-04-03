@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, useRef } from 'react';
+import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, useRef, useState } from 'react';
 import {
   ArrowRight,
   BarChart3,
@@ -51,19 +51,19 @@ function SectionHeading({
       <span className="inline-flex rounded-full border border-black/5 bg-white px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-rose-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-rose-300">
         {eyebrow}
       </span>
-      <h2 className="mt-6 text-4xl font-semibold tracking-[-0.05em] text-gray-900 dark:text-gray-100">{title}</h2>
-      <p className="mt-4 text-base leading-8 text-gray-600 dark:text-gray-400">{description}</p>
+      <h2 className="mt-5 text-3xl font-semibold tracking-[-0.05em] text-gray-900 dark:text-gray-100 md:mt-6 md:text-4xl">{title}</h2>
+      <p className="mt-4 text-[15px] leading-7 text-gray-600 dark:text-gray-400 md:text-base md:leading-8">{description}</p>
     </div>
   );
 }
 
 function FeatureCard({ icon: Icon, title, description }: { icon: LucideIcon; title: string; description: string }) {
   return (
-    <div className="rounded-[2rem] border border-black/5 bg-white p-7 backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.04]">
+    <div className="rounded-[1.7rem] border border-black/5 bg-white p-6 backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.04] md:rounded-[2rem] md:p-7">
       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-500 dark:bg-white/10 dark:text-rose-300">
         <Icon className="h-5 w-5" strokeWidth={1.8} />
       </div>
-      <h3 className="mt-6 text-xl font-semibold tracking-[-0.03em] text-gray-900 dark:text-gray-100">{title}</h3>
+      <h3 className="mt-5 text-xl font-semibold tracking-[-0.03em] text-gray-900 dark:text-gray-100 md:mt-6">{title}</h3>
       <p className="mt-3 text-sm leading-7 text-gray-600 dark:text-gray-400">{description}</p>
     </div>
   );
@@ -76,6 +76,7 @@ function PricingCard({
   features,
   cta,
   highlighted = false,
+  onCtaClick,
 }: {
   title: string;
   price: string;
@@ -83,10 +84,11 @@ function PricingCard({
   features: string[];
   cta: string;
   highlighted?: boolean;
+  onCtaClick?: (event: ReactMouseEvent<HTMLAnchorElement>) => void;
 }) {
   return highlighted ? (
-    <div className="rounded-[2rem] bg-[linear-gradient(135deg,rgba(244,63,94,0.95),rgba(251,113,133,0.45),rgba(255,255,255,0.15))] p-[1px] shadow-[0_28px_80px_rgba(244,63,94,0.22)]">
-      <div className="rounded-[calc(2rem-1px)] bg-white p-8 backdrop-blur-sm dark:bg-[#111111]">
+    <div className="rounded-[1.7rem] bg-[linear-gradient(135deg,rgba(244,63,94,0.95),rgba(251,113,133,0.45),rgba(255,255,255,0.15))] p-[1px] shadow-[0_28px_80px_rgba(244,63,94,0.22)] md:rounded-[2rem]">
+      <div className="rounded-[calc(1.7rem-1px)] bg-white p-6 backdrop-blur-sm dark:bg-[#111111] md:rounded-[calc(2rem-1px)] md:p-8">
         <div className="flex items-start justify-between gap-4">
           <div>
             <span className="inline-flex rounded-full bg-rose-500 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white">Phổ biến</span>
@@ -101,7 +103,7 @@ function PricingCard({
 
         <p className="mt-4 text-sm leading-7 text-gray-600 dark:text-gray-400">{description}</p>
 
-        <div className="mt-8 grid gap-3 md:grid-cols-2">
+        <div className="mt-7 grid gap-3 md:mt-8 md:grid-cols-2">
           {features.map((item) => (
             <div key={item} className="flex items-center gap-3 rounded-[1.25rem] border border-black/5 bg-white px-4 py-3 dark:border-white/10 dark:bg-white/[0.04]">
               <Check className="h-4 w-4 text-rose-500" strokeWidth={2} />
@@ -110,14 +112,14 @@ function PricingCard({
           ))}
         </div>
 
-        <a href="/login" className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-rose-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-rose-400">
+        <a href="/login" onClick={onCtaClick} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-rose-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-rose-400 sm:w-auto">
           {cta}
           <ArrowRight className="h-4 w-4" strokeWidth={1.8} />
         </a>
       </div>
     </div>
   ) : (
-    <div className="rounded-[2rem] border border-black/5 bg-white p-8 backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.04]">
+    <div className="rounded-[1.7rem] border border-black/5 bg-white p-6 backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.04] md:rounded-[2rem] md:p-8">
       <div className="flex items-start justify-between gap-4">
         <div>
           <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-gray-700 dark:bg-white/10 dark:text-gray-200">{title}</span>
@@ -139,7 +141,8 @@ function PricingCard({
 
       <a
         href="/login"
-        className="mt-8 inline-flex items-center justify-center gap-2 rounded-full border border-black/5 bg-white px-6 py-3 text-sm font-semibold text-gray-900 transition hover:bg-gray-50 dark:border-white/10 dark:bg-white/[0.05] dark:text-white dark:hover:bg-white/[0.08]"
+        onClick={onCtaClick}
+        className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full border border-black/5 bg-white px-6 py-3 text-sm font-semibold text-gray-900 transition hover:bg-gray-50 dark:border-white/10 dark:bg-white/[0.05] dark:text-white dark:hover:bg-white/[0.08] sm:w-auto"
       >
         {cta}
         <ArrowRight className="h-4 w-4" strokeWidth={1.8} />
@@ -148,11 +151,47 @@ function PricingCard({
   );
 }
 
+function DesktopOnlyNotice({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        className="w-full max-w-sm rounded-[2rem] border border-black/5 bg-white p-6 text-center shadow-[0_30px_80px_rgba(15,23,42,0.18)] dark:border-white/10 dark:bg-[#111111]"
+      >
+        <span className="inline-flex rounded-full bg-rose-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-rose-500 dark:bg-white/10 dark:text-rose-300">
+          Chỉ hỗ trợ desktop
+        </span>
+        <h3 className="mt-5 text-2xl font-semibold tracking-[-0.04em] text-gray-900 dark:text-gray-100">Hãy dùng trên máy tính</h3>
+        <p className="mt-3 text-sm leading-7 text-gray-600 dark:text-gray-400">
+          Builder hiện chỉ dùng tốt trên bản desktop máy tính. Vui lòng mở lại bằng laptop hoặc PC để đăng nhập và chỉnh sửa profile.
+        </p>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-6 inline-flex items-center justify-center rounded-full bg-rose-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-rose-400"
+        >
+          Đã hiểu
+        </button>
+      </motion.div>
+    </div>
+  );
+}
+
 export function LandingPage() {
   const { mode, toggleMode } = useAppExperience();
   const isDark = mode === 'dark';
+  const [showDesktopOnlyNotice, setShowDesktopOnlyNotice] = useState(false);
   const phoneDragRef = useRef<{ pointerId: number; startY: number; startScrollTop: number; moved: boolean } | null>(null);
   const suppressPhoneClickRef = useRef(false);
+
+  const handleLoginClick = (event: ReactMouseEvent<HTMLAnchorElement>) => {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches) {
+      event.preventDefault();
+      setShowDesktopOnlyNotice(true);
+    }
+  };
 
   const handlePhonePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType !== 'mouse') return;
@@ -207,7 +246,9 @@ export function LandingPage() {
 
   return (
     <main className="min-h-screen transition-colors duration-300 bg-[#fafafa] text-gray-900 dark:bg-[#0a0a0a] dark:text-gray-100">
-      <div className="max-w-7xl mx-auto px-4 pt-6 flex items-center justify-between gap-4">
+      {showDesktopOnlyNotice ? <DesktopOnlyNotice onClose={() => setShowDesktopOnlyNotice(false)} /> : null}
+
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 pt-4 md:pt-6">
         <a href="/" className="inline-flex rounded-full border border-black/5 bg-white px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.34em] text-gray-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-gray-100">
           ItsMe
         </a>
@@ -216,40 +257,42 @@ export function LandingPage() {
           <button
             type="button"
             onClick={toggleMode}
-            className="inline-flex items-center gap-2 rounded-full border border-black/5 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-gray-100"
+            aria-label={isDark ? 'Chế độ sáng' : 'Chế độ tối'}
+            title={isDark ? 'Chế độ sáng' : 'Chế độ tối'}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/5 bg-white text-gray-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-gray-100 md:h-auto md:w-auto md:gap-2 md:px-4 md:py-2 md:text-[11px] md:font-semibold md:uppercase md:tracking-[0.24em]"
           >
             {isDark ? <SunMedium className="h-4 w-4" strokeWidth={1.8} /> : <MoonStar className="h-4 w-4" strokeWidth={1.8} />}
-            {isDark ? 'Chế độ sáng' : 'Chế độ tối'}
+            <span className="hidden md:inline">{isDark ? 'Chế độ sáng' : 'Chế độ tối'}</span>
           </button>
 
-          <a href="/login" className="inline-flex rounded-full border border-black/5 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-gray-100">
+          <a href="/login" onClick={handleLoginClick} className="inline-flex rounded-full border border-black/5 bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-gray-100">
             Đăng nhập
           </a>
         </div>
       </div>
 
-      <section className="max-w-7xl mx-auto px-4 pt-32 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div className="flex flex-col items-start text-left space-y-6">
+      <section className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-4 pb-16 pt-14 sm:pt-20 lg:grid-cols-2 lg:gap-12 lg:pt-28 lg:pb-20">
+        <div className="flex flex-col items-center space-y-6 text-center lg:items-start lg:text-left">
           <span className="inline-flex rounded-full border border-black/5 bg-white px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-rose-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-rose-300">
             Bộ công cụ tăng trưởng creator
           </span>
 
-          <h1 className="max-w-xl text-5xl font-bold tracking-[-0.06em] text-gray-900 dark:text-gray-100 md:text-7xl">
+          <h1 className="max-w-[12ch] text-[2.7rem] font-bold tracking-[-0.06em] text-gray-900 dark:text-gray-100 sm:max-w-xl sm:text-5xl md:text-6xl lg:text-7xl">
             Mọi thứ bạn cần để xây dựng hồ sơ KOC
           </h1>
 
-          <p className="max-w-xl text-base leading-8 text-gray-600 dark:text-gray-400 md:text-lg">
+          <p className="max-w-xl text-[15px] leading-7 text-gray-600 dark:text-gray-400 md:text-lg md:leading-8">
             Xây dựng hồ sơ creator chuyên nghiệp, trưng bày sản phẩm, nhận yêu cầu booking và biến mỗi lượt ghé thăm thành doanh thu affiliate có thể đo lường.
           </p>
 
-          <div className="flex flex-wrap gap-4">
-            <a href="/login" className="inline-flex items-center gap-2 rounded-full bg-rose-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-rose-400">
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center lg:justify-start">
+            <a href="/login" onClick={handleLoginClick} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-rose-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-rose-400 sm:w-auto">
               Bắt đầu miễn phí
               <ArrowRight className="h-4 w-4" strokeWidth={1.8} />
             </a>
             <a
               href="mailto:hello@itsme.vn?subject=Dat%20lich%20demo"
-              className="inline-flex items-center gap-2 rounded-full border border-black/5 bg-white px-6 py-3 text-sm font-semibold text-gray-900 transition hover:bg-gray-50 dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/[0.08]"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-black/5 bg-white px-6 py-3 text-sm font-semibold text-gray-900 transition hover:bg-gray-50 dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/[0.08] sm:w-auto"
             >
               Đặt lịch demo
               <ArrowRight className="h-4 w-4" strokeWidth={1.8} />
@@ -257,8 +300,8 @@ export function LandingPage() {
           </div>
         </div>
 
-        <div className="relative flex h-[760px] w-full items-center justify-center lg:justify-end">
-          <div className="relative z-10 h-[680px] w-[340px]">
+        <div className="relative flex h-[540px] w-full items-center justify-center sm:h-[640px] lg:h-[760px] lg:justify-end">
+          <div className="relative z-10 h-[540px] w-[270px] sm:h-[620px] sm:w-[310px] lg:h-[680px] lg:w-[340px]">
             <div className="absolute inset-8 rounded-full bg-rose-500/10 blur-[70px] transition-colors duration-500 dark:bg-rose-500/14" />
 
             <div className="relative z-10 h-full w-full overflow-hidden rounded-[3rem] border-[14px] border-[#10172d] bg-white shadow-2xl ring-1 ring-gray-900/5 transition-colors duration-300 dark:border-[#2a2a2a] dark:bg-black dark:ring-white/10">
@@ -279,34 +322,35 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section id="features" className="max-w-7xl mx-auto px-4 pb-24">
+      <section id="features" className="mx-auto max-w-7xl px-4 pb-16 md:pb-24">
         <SectionHeading
           eyebrow="Tính năng"
           title="Công cụ mạnh mẽ, thao tác đơn giản"
           description="Từ landing page đến trình dựng profile, mọi điểm chạm đều được giữ cùng một ngôn ngữ thiết kế để creator thao tác nhanh mà vẫn chuyên nghiệp."
         />
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+        <div className="mt-8 grid gap-5 md:mt-10 lg:grid-cols-3 lg:gap-6">
           {featureItems.map((item) => (
             <FeatureCard key={item.title} icon={item.icon} title={item.title} description={item.description} />
           ))}
         </div>
       </section>
 
-      <section id="pricing" className="max-w-7xl mx-auto px-4 pb-24">
+      <section id="pricing" className="mx-auto max-w-7xl px-4 pb-20 md:pb-24">
         <SectionHeading
           eyebrow="Bảng giá"
           title="Chọn gói phù hợp với tốc độ phát triển của bạn"
           description="Bắt đầu với những gì cần thiết để lên profile nhanh, sau đó nâng cấp khi bạn cần nhiều quyền kiểm soát hơn và hình ảnh chuyên nghiệp hơn."
         />
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <div className="mt-8 grid gap-5 md:mt-10 lg:grid-cols-2 lg:gap-6">
           <PricingCard
             title="Miễn phí"
             price="0 VND"
             description="Phù hợp cho creator muốn bắt đầu nhanh với profile gọn gàng, có thể chỉnh các màu cơ bản và trưng bày tối đa 3 sản phẩm đầu tiên."
             features={pricingPlans.free}
             cta="Bắt đầu với gói Miễn phí"
+            onCtaClick={handleLoginClick}
           />
 
           <PricingCard
@@ -315,6 +359,7 @@ export function LandingPage() {
             description="Dành cho creator muốn mở toàn bộ quyền tùy biến màu sắc, đăng nhiều sản phẩm hơn và sẵn sàng đón các tính năng cao cấp sẽ bổ sung tiếp theo."
             features={pricingPlans.pro}
             cta="Nâng cấp lên Pro"
+            onCtaClick={handleLoginClick}
             highlighted
           />
         </div>
