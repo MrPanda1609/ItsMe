@@ -5,9 +5,54 @@ import { cn } from '../../../lib/cn';
 import { FONT_PRESETS, THEME_PRESETS } from '../config/builderPresets';
 import { PROFILE_TEMPLATE_OPTIONS } from '../config/profileTemplates';
 import { builderSelectors, useBuilderStore } from '../store/useBuilderStore';
-import type { FontPreset, ProfileTemplateId, ThemePreset } from '../types';
+import type { FontPreset, ProfileEffectId, ProfileTemplateId, ThemePreset } from '../types';
 import { hasProAccess as hasProAccessForStatus, isAdvancedTextColorActive } from '../utils/proFeatureAccess';
 import { BuilderPanelSection } from './BuilderPanelSection';
+
+const EFFECT_OPTIONS: Array<{ id: ProfileEffectId; title: string; subtitle: string; emoji: string; isPro: boolean }> = [
+  { id: 'none', title: 'Không có hiệu ứng', subtitle: 'Profile tĩnh, không có chuyển động phủ lên.', emoji: '—', isPro: false },
+  { id: 'rose-petals', title: 'Cánh hoa bay', subtitle: 'Những cánh hoa hồng rơi nhẹ theo màu nhấn.', emoji: '🌸', isPro: true },
+  { id: 'fireflies', title: 'Đóm đóm', subtitle: 'Các đốm sáng nhỏ nổi lên mờ ảo, rất dễ chịu.', emoji: '✨', isPro: true },
+  { id: 'starlight', title: 'Ánh sao', subtitle: 'Các ngôi sao và điểm sáng lấp lánh khắp profile.', emoji: '⭐', isPro: true },
+];
+
+function EffectOption({ option, selected, trialing, onClick }: { option: (typeof EFFECT_OPTIONS)[number]; selected: boolean; trialing: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'relative flex items-center gap-4 rounded-[24px] border p-4 text-left transition dark:border-white/10 dark:bg-[#111111]',
+        selected
+          ? 'border-rose-200 bg-rose-50 shadow-sm dark:border-rose-400/30 dark:bg-rose-500/10'
+          : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 dark:hover:border-white/20 dark:hover:bg-white/[0.05]',
+      )}
+    >
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 text-2xl dark:border-white/10 dark:bg-white/[0.04]">
+        {option.emoji}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">{option.title}</p>
+        <p className="mt-0.5 text-xs leading-5 text-slate-500 dark:text-slate-400">{option.subtitle}</p>
+      </div>
+      <div className="flex shrink-0 flex-col items-end gap-2">
+        {option.isPro ? (
+          <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] uppercase tracking-[0.24em] text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+            Pro
+          </span>
+        ) : null}
+        {trialing ? (
+          <span className="text-[10px] uppercase tracking-[0.22em] text-violet-600 dark:text-violet-300">Đang thử</span>
+        ) : null}
+        {selected ? (
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-rose-200 bg-white text-rose-700 dark:border-rose-400/30 dark:bg-white/10 dark:text-rose-200">
+            <Check className="h-3.5 w-3.5" strokeWidth={2.2} />
+          </span>
+        ) : null}
+      </div>
+    </button>
+  );
+}
 
 interface OptionCardProps {
   title: string;
@@ -82,6 +127,41 @@ function TemplatePreview({ id }: { id: ProfileTemplateId }) {
           <div className="h-2 w-20 rounded-full bg-slate-800 dark:bg-white/80" />
           <div className="mt-2 h-1.5 w-28 rounded-full bg-slate-200 dark:bg-white/10" />
         </div>
+      </div>
+    );
+  }
+
+  if (id === 'banner-float') {
+    return (
+      <div className="relative h-full overflow-hidden rounded-[18px] bg-[linear-gradient(180deg,#fff4fb_0%,#ffffff_100%)] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.02)_100%)]">
+        <div className="absolute inset-x-0 top-0 h-10 bg-[linear-gradient(135deg,#f9a8d4_0%,#fecdd3_100%)]" />
+        <div className="absolute inset-x-4 top-6 h-14 rounded-[14px] border border-white/60 bg-white/95 shadow-[0_8px_20px_rgba(244,114,182,0.14)] dark:border-white/10 dark:bg-[#1a1a1a]">
+          <div className="mt-3 mx-3 h-2 w-12 rounded-full bg-slate-700 dark:bg-white/70" />
+          <div className="mt-1.5 mx-3 h-1.5 w-16 rounded-full bg-slate-300 dark:bg-white/20" />
+        </div>
+      </div>
+    );
+  }
+
+  if (id === 'cinematic') {
+    return (
+      <div className="relative h-full overflow-hidden rounded-[18px]">
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,#f9a8d4_0%,#a5b4fc_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_30%,rgba(15,15,25,0.88)_100%)]" />
+        <div className="absolute bottom-3 left-3 right-3">
+          <div className="h-2.5 w-16 rounded-full bg-white/90" />
+          <div className="mt-1.5 h-1.5 w-20 rounded-full bg-white/50" />
+        </div>
+      </div>
+    );
+  }
+
+  if (id === 'ribbon') {
+    return (
+      <div className="relative h-full overflow-hidden rounded-[18px] bg-[linear-gradient(180deg,#fff7fa_0%,#ffffff_100%)] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0.02)_100%)]">
+        <div className="absolute inset-x-0 top-0 h-10 rounded-t-[18px] bg-[linear-gradient(90deg,#fb7185_0%,#f9a8d4_100%)]" />
+        <div className="absolute left-1/2 top-6 h-10 w-10 -translate-x-1/2 rounded-full border-2 border-white/80 bg-[linear-gradient(135deg,#fecdd3_0%,#fda4af_100%)] shadow-lg" />
+        <div className="absolute inset-x-6 bottom-3 h-1.5 rounded-full bg-slate-200 dark:bg-white/10" />
       </div>
     );
   }
@@ -217,6 +297,7 @@ export const AppearancePanel = memo(function AppearancePanel() {
   const selectedTheme = useBuilderStore((state) => state.profileData.selectedTheme);
   const selectedFont = useBuilderStore((state) => state.profileData.selectedFont);
   const selectedTemplate = useBuilderStore((state) => state.profileData.profileTemplate);
+  const selectedEffect = useBuilderStore((state) => state.profileData.profileEffect);
   const userStatus = useBuilderStore(builderSelectors.userStatus);
   const hasProAccess = useBuilderStore(builderSelectors.hasProAccess);
   const mustShowWatermark = useBuilderStore(builderSelectors.mustShowWatermark);
@@ -326,6 +407,27 @@ export const AppearancePanel = memo(function AppearancePanel() {
               <SizeControl label="Mô tả" value={profileData.bioSize} min={13} max={24} onChange={(value) => setProfileField('bioSize', value)} description="Cỡ chữ của đoạn giới thiệu ngắn." />
               <SizeControl label="Tiêu đề phần" value={profileData.sectionTitleSize} min={22} max={40} onChange={(value) => setProfileField('sectionTitleSize', value)} description="Cỡ chữ của tiêu đề khối sản phẩm." />
               <SizeControl label="Tiêu đề thẻ" value={profileData.cardTitleSize} min={14} max={24} onChange={(value) => setProfileField('cardTitleSize', value)} description="Cỡ chữ tên sản phẩm hoặc link." />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Hiệu ứng profile</h3>
+              <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] uppercase tracking-[0.24em] text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+                Pro
+              </span>
+            </div>
+            <p className="text-xs leading-5 text-slate-500 dark:text-slate-400">Hiệu ứng hoạt ảnh phủ lên profile công khai. Màu nhấn sẽ ảnh hưởng trực tiếp lên các hạt hiệu ứng.</p>
+            <div className="grid gap-3">
+              {EFFECT_OPTIONS.map((option) => (
+                <EffectOption
+                  key={option.id}
+                  option={option}
+                  selected={selectedEffect === option.id}
+                  trialing={option.isPro && selectedEffect === option.id && isFreeTryingPro}
+                  onClick={() => setProfileField('profileEffect', option.id)}
+                />
+              ))}
             </div>
           </div>
 

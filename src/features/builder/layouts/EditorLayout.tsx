@@ -119,7 +119,7 @@ export function EditorLayout({ controls, preview, headerActions }: EditorLayoutP
             </div>
           </header>
 
-          <div className="flex-1 overflow-y-auto px-6 py-6">
+          <div className="flex-1 overflow-y-auto px-6 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {controls ?? (
               <PanelFallback
                 title="Panel bên trái đã sẵn sàng"

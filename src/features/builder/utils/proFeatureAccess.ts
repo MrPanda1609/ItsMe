@@ -42,6 +42,10 @@ export const getActiveProFeatureLabels = (profileData: ProfileData, userStatus: 
 
   if (!profileData.watermarkEnabled) labels.add('Tắt dấu ItsMe');
   if (!profileData.brandPromoEnabled) labels.add('Tắt popup quảng bá ItsMe');
+  if (profileData.profileEffect && profileData.profileEffect !== 'none') {
+    const effectLabels: Record<string, string> = { 'rose-petals': 'Cánh hoa bay', 'fireflies': 'Đóm đóm', 'starlight': 'Ánh sao' };
+    labels.add(`Hiệu ứng profile: ${effectLabels[profileData.profileEffect] ?? profileData.profileEffect}`);
+  }
 
   const productCount = countProducts(profileData.links);
   if (productCount > 3) labels.add(`Thêm ${productCount} sản phẩm (Free chỉ lưu tối đa 3)`);
@@ -78,6 +82,7 @@ export const getFreeCompatibleProfile = (profileData: ProfileData): ProfileData 
     sectionTitleColor: nextTheme.textColor,
     cardTitleColor: nextTheme.textColor,
     mutedTextColor: nextTheme.mutedTextColor,
+    profileEffect: 'none',
     brandPromoEnabled: true,
     watermarkEnabled: true,
     links: limitProductsForFree(profileData.links),

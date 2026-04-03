@@ -1,6 +1,7 @@
 export type BuilderBlockType = 'link' | 'product';
 export type UserPlan = 'free' | 'pro' | 'admin';
-export type ProfileTemplateId = 'cover-story' | 'avatar-circle' | 'editorial-poster';
+export type ProfileTemplateId = 'cover-story' | 'avatar-circle' | 'editorial-poster' | 'banner-float' | 'cinematic' | 'ribbon';
+export type ProfileEffectId = 'none' | 'rose-petals' | 'fireflies' | 'starlight';
 
 export interface ThemePreset {
   id: string;
@@ -104,6 +105,7 @@ export interface ProfileData {
   selectedFont: FontPreset;
   cardStyle: CardStyleOption;
   shapeStyle: ShapeStyleOption;
+  profileEffect: ProfileEffectId;
   brandPromoEnabled: boolean;
   watermarkEnabled: boolean;
 }

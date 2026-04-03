@@ -38,6 +38,7 @@ export const createDefaultProfileData = (): ProfileData => ({
   selectedFont: DEFAULT_FONT,
   cardStyle: DEFAULT_CARD_STYLE,
   shapeStyle: DEFAULT_SHAPE_STYLE,
+  profileEffect: 'none',
   brandPromoEnabled: true,
   watermarkEnabled: true,
 });

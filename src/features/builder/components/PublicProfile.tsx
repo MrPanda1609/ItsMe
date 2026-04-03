@@ -4,6 +4,7 @@ import type { CSSProperties } from 'react';
 import { cn } from '../../../lib/cn';
 import type { BuilderItem, BuilderProductItem, ProfileData, ProfileTemplateId, SocialLinks } from '../types';
 import { radiusTokenToValue, withAlpha } from '../utils/profileTheme';
+import { ProfileEffectOverlay } from './ProfileEffectOverlay';
 
 interface PublicProfileProps {
   profileData: ProfileData;
@@ -293,10 +294,9 @@ function CoverStoryTemplate({ profileData, coverImage, visibleSocialLinks, mode 
         <div
           className="absolute inset-0"
           style={{
-            background: `linear-gradient(180deg, ${withAlpha(profileData.backgroundColor, 0)} 24%, ${withAlpha(profileData.backgroundColor, 0.16)} 48%, ${withAlpha(profileData.backgroundColor, 0.94)} 82%, ${profileData.backgroundColor} 100%)`,
+            background: `linear-gradient(180deg, ${withAlpha(profileData.backgroundColor, 0)} 10%, ${withAlpha(profileData.backgroundColor, 0.1)} 40%, ${withAlpha(profileData.backgroundColor, 0.75)} 68%, ${withAlpha(profileData.backgroundColor, 0.97)} 88%, ${profileData.backgroundColor} 100%)`,
           }}
         />
-        <div className="absolute bottom-[-34px] left-1/2 h-28 w-[88%] -translate-x-1/2 rounded-full blur-3xl" style={{ backgroundColor: withAlpha(profileData.backgroundColor, 0.96) }} />
       </div>
 
       <div className="relative -mt-6 px-4">
@@ -334,13 +334,127 @@ function EditorialPosterTemplate({ profileData, coverImage, visibleSocialLinks, 
   return (
     <section className="px-4 pt-6">
       <div className="relative rounded-[2.4rem] border p-3" style={{ borderColor: profileData.selectedTheme.borderColor, backgroundColor: withAlpha(profileData.surfaceColor, 0.92), boxShadow: `0 24px 50px ${withAlpha(profileData.accentColor, 0.1)}` }}>
-        <div className="overflow-hidden rounded-[2rem] aspect-[4/5]">
+        <div className="relative overflow-hidden rounded-[2rem] aspect-[4/5]">
           <ProfileImageBlock profileData={profileData} coverImage={coverImage} className="h-full w-full" />
+          <div
+            className="absolute inset-0"
+            style={{ background: `linear-gradient(180deg, transparent 50%, ${withAlpha(profileData.surfaceColor, 0.85)} 85%, ${profileData.surfaceColor} 100%)` }}
+          />
         </div>
 
         <div className="relative mx-2 -mt-12 rounded-[2rem] border px-5 pb-5 pt-4 shadow-[0_20px_40px_rgba(15,23,42,0.12)]" style={{ borderColor: withAlpha(profileData.accentColor, 0.12), backgroundColor: withAlpha(profileData.surfaceColor, 0.96) }}>
           <ProfileIdentity profileData={profileData} visibleSocialLinks={visibleSocialLinks} mode={mode} align="left" compact />
         </div>
+      </div>
+    </section>
+  );
+}
+
+type TemplateProps = { profileData: ProfileData; coverImage: string | null; visibleSocialLinks: Array<{ key: keyof SocialLinks; label: string; icon: () => JSX.Element }>; mode: 'preview' | 'public' };
+
+function BannerFloatTemplate({ profileData, coverImage, visibleSocialLinks, mode }: TemplateProps) {
+  return (
+    <section className="px-3 pt-5">
+      <div
+        className="relative overflow-hidden rounded-[2.4rem] border"
+        style={{ borderColor: profileData.selectedTheme.borderColor, boxShadow: `0 32px 64px ${withAlpha(profileData.accentColor, 0.14)}` }}
+      >
+        {/* Short banner image */}
+        <div className="relative h-[180px] overflow-hidden">
+          <ProfileImageBlock profileData={profileData} coverImage={coverImage} className="h-full w-full" />
+          <div
+            className="absolute inset-0"
+            style={{ background: `linear-gradient(180deg, ${withAlpha(profileData.surfaceColor, 0)} 20%, ${withAlpha(profileData.surfaceColor, 0.5)} 58%, ${withAlpha(profileData.surfaceColor, 0.96)} 88%, ${profileData.surfaceColor} 100%)` }}
+          />
+        </div>
+
+        {/* Floating identity card — overlaps banner */}
+        <div
+          className="relative -mt-10 mx-4 rounded-[2rem] px-5 pb-6 pt-5"
+          style={{ backgroundColor: profileData.surfaceColor, border: `1px solid ${withAlpha(profileData.accentColor, 0.1)}`, boxShadow: `0 -8px 32px ${withAlpha(profileData.accentColor, 0.08)}, 0 16px 32px ${withAlpha(profileData.accentColor, 0.06)}` }}
+        >
+          {/* Accent glow orb */}
+          <div className="absolute right-4 top-[-20px] h-16 w-16 rounded-full blur-2xl" style={{ backgroundColor: withAlpha(profileData.accentColor, 0.24) }} />
+
+          <ProfileIdentity profileData={profileData} visibleSocialLinks={visibleSocialLinks} mode={mode} align="center" compact />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CinematicTemplate({ profileData, coverImage, visibleSocialLinks, mode }: TemplateProps) {
+  return (
+    <section>
+      {/* Full portrait image with identity overlaid */}
+      <div className="relative" style={{ minHeight: '340px' }}>
+        <div className="h-[340px] overflow-hidden">
+          <ProfileImageBlock profileData={profileData} coverImage={coverImage} className="h-full w-full" />
+        </div>
+
+        {/* Deep cinematic gradient — starts early, fully opaque at bottom */}
+        <div
+          className="absolute inset-0"
+          style={{ background: `linear-gradient(180deg, transparent 5%, ${withAlpha(profileData.backgroundColor, 0.04)} 28%, ${withAlpha(profileData.backgroundColor, 0.55)} 55%, ${withAlpha(profileData.backgroundColor, 0.92)} 78%, ${profileData.backgroundColor} 92%)` }}
+        />
+
+        {/* Identity sitting on image */}
+        <div className="absolute bottom-0 inset-x-0 px-5 pb-6">
+          <h1
+            className="font-bold tracking-[-0.06em] leading-none"
+            style={{ color: profileData.nameColor, fontSize: profileData.displayNameSize }}
+          >
+            {profileData.displayName || 'Tên KOC của bạn'}
+          </h1>
+          <p className="mt-2 whitespace-pre-line" style={{ color: profileData.bioColor, fontSize: profileData.bioSize, lineHeight: 1.65 }}>
+            {profileData.bio || 'Giới thiệu ngắn về bạn.'}
+          </p>
+          <SocialButtons visibleSocialLinks={visibleSocialLinks} profileData={profileData} mode={mode} align="left" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function RibbonTemplate({ profileData, coverImage, visibleSocialLinks, mode }: TemplateProps) {
+  return (
+    <section className="px-4 pt-5">
+      {/* Decorative ribbon strip */}
+      <div
+        className="relative mb-5 overflow-hidden rounded-[2rem] px-6 py-5"
+        style={{ background: `linear-gradient(135deg, ${profileData.accentColor}, ${withAlpha(profileData.accentColor, 0.6)})`, boxShadow: `0 12px 32px ${withAlpha(profileData.accentColor, 0.28)}` }}
+      >
+        {/* Geometric accent shapes */}
+        <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full opacity-30" style={{ backgroundColor: 'white' }} />
+        <div className="absolute -bottom-4 left-1/3 h-14 w-14 rounded-full opacity-20" style={{ backgroundColor: 'white' }} />
+        <p className="relative text-[10px] font-semibold uppercase tracking-[0.4em] text-white/80">Profile</p>
+        <p
+          className="relative mt-1 font-bold leading-none tracking-[-0.05em] text-white"
+          style={{ fontSize: Math.min(profileData.displayNameSize, 28) }}
+        >
+          {profileData.displayName || 'Tên của bạn'}
+        </p>
+      </div>
+
+      {/* Avatar + bio card */}
+      <div
+        className="overflow-hidden rounded-[2.2rem] border px-5 pb-6 pt-5"
+        style={{ borderColor: profileData.selectedTheme.borderColor, backgroundColor: withAlpha(profileData.surfaceColor, 0.95), boxShadow: `0 24px 48px ${withAlpha(profileData.accentColor, 0.08)}` }}
+      >
+        <div className="flex items-center gap-4">
+          <div
+            className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-[3px]"
+            style={{ borderColor: withAlpha(profileData.accentColor, 0.3), boxShadow: `0 8px 24px ${withAlpha(profileData.accentColor, 0.2)}` }}
+          >
+            <ProfileImageBlock profileData={profileData} coverImage={coverImage} className="h-full w-full rounded-full" circular />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="whitespace-pre-line text-sm leading-6" style={{ color: profileData.bioColor, fontSize: profileData.bioSize * 0.9 }}>
+              {profileData.bio || 'Mô tả ngắn về bạn.'}
+            </p>
+          </div>
+        </div>
+        <SocialButtons visibleSocialLinks={visibleSocialLinks} profileData={profileData} mode={mode} align="center" />
       </div>
     </section>
   );
@@ -565,17 +679,25 @@ export function PublicProfile({
         <div className="absolute bottom-10 right-[-48px] h-52 w-52 rounded-full blur-3xl" style={{ backgroundColor: withAlpha(profileData.accentColor, 0.18) }} />
       </div>
 
+      <ProfileEffectOverlay effect={profileData.profileEffect ?? 'none'} accentColor={profileData.accentColor} />
+
       <div className="relative h-full overflow-y-auto hidden-scrollbar">
         <div className="min-h-full pb-10">
           {activeTemplate === 'avatar-circle' ? (
             <AvatarCircleTemplate profileData={profileData} coverImage={coverImage} visibleSocialLinks={visibleSocialLinks} mode={mode} />
           ) : activeTemplate === 'editorial-poster' ? (
             <EditorialPosterTemplate profileData={profileData} coverImage={coverImage} visibleSocialLinks={visibleSocialLinks} mode={mode} />
+          ) : activeTemplate === 'banner-float' ? (
+            <BannerFloatTemplate profileData={profileData} coverImage={coverImage} visibleSocialLinks={visibleSocialLinks} mode={mode} />
+          ) : activeTemplate === 'cinematic' ? (
+            <CinematicTemplate profileData={profileData} coverImage={coverImage} visibleSocialLinks={visibleSocialLinks} mode={mode} />
+          ) : activeTemplate === 'ribbon' ? (
+            <RibbonTemplate profileData={profileData} coverImage={coverImage} visibleSocialLinks={visibleSocialLinks} mode={mode} />
           ) : (
             <CoverStoryTemplate profileData={profileData} coverImage={coverImage} visibleSocialLinks={visibleSocialLinks} mode={mode} />
           )}
 
-          <ProfileSection profileData={profileData} visibleItems={visibleItems} mode={mode} cardStyle={cardStyle} align={activeTemplate === 'editorial-poster' ? 'left' : 'center'} />
+          <ProfileSection profileData={profileData} visibleItems={visibleItems} mode={mode} cardStyle={cardStyle} align={activeTemplate === 'editorial-poster' || activeTemplate === 'cinematic' ? 'left' : 'center'} />
 
           {mustShowWatermark ? (
             <footer className="mt-2 flex justify-center pb-2 pt-1">
