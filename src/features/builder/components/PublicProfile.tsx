@@ -294,7 +294,7 @@ function CoverStoryTemplate({ profileData, coverImage, visibleSocialLinks, mode 
         <div
           className="absolute inset-0"
           style={{
-            background: `linear-gradient(180deg, ${withAlpha(profileData.backgroundColor, 0)} 10%, ${withAlpha(profileData.backgroundColor, 0.1)} 40%, ${withAlpha(profileData.backgroundColor, 0.75)} 68%, ${withAlpha(profileData.backgroundColor, 0.97)} 88%, ${profileData.backgroundColor} 100%)`,
+            background: `linear-gradient(180deg, transparent 0%, transparent 48%, ${withAlpha(profileData.backgroundColor, 0.4)} 65%, ${withAlpha(profileData.backgroundColor, 0.88)} 80%, ${profileData.backgroundColor} 95%)`,
           }}
         />
       </div>
@@ -338,7 +338,7 @@ function EditorialPosterTemplate({ profileData, coverImage, visibleSocialLinks, 
           <ProfileImageBlock profileData={profileData} coverImage={coverImage} className="h-full w-full" />
           <div
             className="absolute inset-0"
-            style={{ background: `linear-gradient(180deg, transparent 50%, ${withAlpha(profileData.surfaceColor, 0.85)} 85%, ${profileData.surfaceColor} 100%)` }}
+            style={{ background: `linear-gradient(180deg, transparent 0%, transparent 55%, ${withAlpha(profileData.surfaceColor, 0.5)} 75%, ${withAlpha(profileData.surfaceColor, 0.92)} 90%, ${profileData.surfaceColor} 100%)` }}
           />
         </div>
 
@@ -364,7 +364,7 @@ function BannerFloatTemplate({ profileData, coverImage, visibleSocialLinks, mode
           <ProfileImageBlock profileData={profileData} coverImage={coverImage} className="h-full w-full" />
           <div
             className="absolute inset-0"
-            style={{ background: `linear-gradient(180deg, ${withAlpha(profileData.surfaceColor, 0)} 20%, ${withAlpha(profileData.surfaceColor, 0.5)} 58%, ${withAlpha(profileData.surfaceColor, 0.96)} 88%, ${profileData.surfaceColor} 100%)` }}
+            style={{ background: `linear-gradient(180deg, transparent 0%, transparent 40%, ${withAlpha(profileData.surfaceColor, 0.5)} 65%, ${withAlpha(profileData.surfaceColor, 0.95)} 85%, ${profileData.surfaceColor} 100%)` }}
           />
         </div>
 
@@ -395,7 +395,7 @@ function CinematicTemplate({ profileData, coverImage, visibleSocialLinks, mode }
         {/* Deep cinematic gradient — starts early, fully opaque at bottom */}
         <div
           className="absolute inset-0"
-          style={{ background: `linear-gradient(180deg, transparent 5%, ${withAlpha(profileData.backgroundColor, 0.04)} 28%, ${withAlpha(profileData.backgroundColor, 0.55)} 55%, ${withAlpha(profileData.backgroundColor, 0.92)} 78%, ${profileData.backgroundColor} 92%)` }}
+          style={{ background: `linear-gradient(180deg, transparent 0%, transparent 30%, ${withAlpha(profileData.backgroundColor, 0.35)} 52%, ${withAlpha(profileData.backgroundColor, 0.85)} 72%, ${profileData.backgroundColor} 90%)` }}
         />
 
         {/* Identity sitting on image */}
