@@ -72,7 +72,7 @@ export function SampleProfile({ mode }: SampleProfileProps) {
 
       <div className="relative -mt-6 flex flex-col items-center px-4 pb-2 text-center">
         <h1 className={`mt-4 flex items-center justify-center gap-1 text-[2rem] font-bold tracking-[-0.06em] ${isDark ? 'text-white' : 'text-[#1f2547]'}`}>
-          Ngiangg <span className="text-rose-400">🩷</span>
+          Pandaa <span className="text-rose-400">🩷</span>
         </h1>
 
         <p className={`mt-3 max-w-[26ch] text-[15px] leading-7 ${isDark ? 'text-slate-300' : 'text-[#6b7280]'}`}>
