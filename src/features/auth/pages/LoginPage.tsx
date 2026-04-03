@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { supabase } from '../../../lib/supabase';
@@ -56,11 +57,21 @@ export function LoginPage({ mode }: LoginPageProps) {
   const [successMessage, setSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    document.documentElement.classList.add('landing-scrollbar-hidden');
+    document.body.classList.add('landing-scrollbar-hidden');
+
+    return () => {
+      document.documentElement.classList.remove('landing-scrollbar-hidden');
+      document.body.classList.remove('landing-scrollbar-hidden');
+    };
+  }, []);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!isConfigured || !supabase) {
-      setError('Thiếu cấu hình Supabase. Hãy thêm VITE_SUPABASE_URL và VITE_SUPABASE_ANON_KEY trước khi dùng đăng nhập thật.');
+      setError('Hệ thống chưa sẵn sàng. Vui lòng liên hệ quản trị viên.');
       return;
     }
 
@@ -125,16 +136,17 @@ export function LoginPage({ mode }: LoginPageProps) {
       <div className="relative mx-auto grid min-h-[calc(100dvh-4rem)] max-w-6xl items-stretch gap-6 md:grid-cols-[0.95fr_1.05fr]">
         <section className="h-full">
           <div className="h-full rounded-[36px] border border-gray-200 bg-white p-8 shadow-[0_24px_70px_rgba(15,23,42,0.08)] md:p-10 dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_28px_80px_rgba(0,0,0,0.35)]">
-            <a href="/" className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-900 dark:text-white">
-              ItsMe
+            <a href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-900 transition hover:text-rose-500 dark:text-white dark:hover:text-rose-300">
+              <ArrowLeft className="h-4 w-4" strokeWidth={1.8} />
+              <span className="uppercase tracking-[0.3em]">ItsMe</span>
             </a>
 
-            <p className="mt-10 text-sm font-medium uppercase tracking-[0.3em] text-rose-500 dark:text-rose-300">Tài khoản creator</p>
+            <p className="mt-10 text-sm font-medium uppercase tracking-[0.3em] text-rose-500 dark:text-rose-300">Tài khoản</p>
             <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em] text-slate-900 dark:text-white">{isSignup ? 'Tạo tài khoản mới' : 'Chào mừng quay lại!'}</h1>
             <p className="mt-4 max-w-[44ch] text-base leading-8 text-slate-600 dark:text-gray-400">
               {isSignup
-                ? 'Sau khi tạo tài khoản, bạn sẽ có builder riêng với nội dung placeholder để tự hoàn thiện profile của mình.'
-                : 'Đăng nhập để quản lý draft, profile public và toàn bộ nội dung builder của riêng bạn.'}
+                ? 'Tạo tài khoản để bắt đầu thiết kế trang cá nhân, trưng bày sản phẩm và chia sẻ link với mọi người.'
+                : 'Đăng nhập để tiếp tục chỉnh sửa trang cá nhân và quản lý nội dung của bạn.'}
             </p>
 
             <div className="mt-10 space-y-4">
@@ -158,7 +170,7 @@ export function LoginPage({ mode }: LoginPageProps) {
         <section className="h-full">
           <div className="flex h-full w-full flex-col justify-center rounded-[36px] border border-gray-200 bg-white p-8 shadow-[0_24px_70px_rgba(15,23,42,0.08)] md:p-10 dark:border-white/10 dark:bg-white/[0.04] dark:shadow-[0_28px_80px_rgba(0,0,0,0.35)]">
             <div>
-              <p className="text-sm font-medium uppercase tracking-[0.3em] text-rose-500 dark:text-rose-300">{isSignup ? 'Đăng ký thật' : 'Đăng nhập thật'}</p>
+              <p className="text-sm font-medium uppercase tracking-[0.3em] text-rose-500 dark:text-rose-300">{isSignup ? 'Đăng ký' : 'Đăng nhập'}</p>
               <h2 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">{isSignup ? 'Tạo tài khoản' : 'Đăng nhập'}</h2>
               <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-gray-400">
                 {isSignup
@@ -169,7 +181,7 @@ export function LoginPage({ mode }: LoginPageProps) {
 
             {!isConfigured ? (
               <div className="mt-8 rounded-[24px] border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-7 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
-                Chưa cấu hình Supabase. Hãy thêm <strong>VITE_SUPABASE_URL</strong> và <strong>VITE_SUPABASE_ANON_KEY</strong> để bật đăng nhập thật.
+                Hệ thống đăng nhập chưa sẵn sàng. Vui lòng liên hệ quản trị viên để được hỗ trợ.
               </div>
             ) : null}
 

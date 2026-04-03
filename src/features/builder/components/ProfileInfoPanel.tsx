@@ -191,13 +191,13 @@ export const ProfileInfoPanel = memo(function ProfileInfoPanel() {
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <label htmlFor="sectionBadge" className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                  Dòng “Các bạn hãy tham khảo”
+                  Nhãn phụ
                 </label>
                 <Input
                   id="sectionBadge"
                   value={sectionBadge}
                   maxLength={40}
-                  placeholder="Ví dụ: Các bạn hãy tham khảo"
+                  placeholder="Ví dụ: Gợi ý cho bạn"
                   className="dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-slate-500"
                   onChange={(event) => setProfileField('sectionBadge', event.target.value)}
                 />
@@ -211,7 +211,7 @@ export const ProfileInfoPanel = memo(function ProfileInfoPanel() {
                   id="sectionTitle"
                   value={sectionTitle}
                   maxLength={80}
-                  placeholder="Ví dụ: Sản phẩm yêu thích của mình nhé!"
+                  placeholder="Ví dụ: Sản phẩm yêu thích"
                   className="dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-slate-500"
                   onChange={(event) => setProfileField('sectionTitle', event.target.value)}
                 />
@@ -221,7 +221,7 @@ export const ProfileInfoPanel = memo(function ProfileInfoPanel() {
             <div className="space-y-3">
               <div>
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-200">Liên kết mạng xã hội</p>
-                <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Nhập link nào thì nút mạng xã hội đó sẽ hiện trên profile công khai.</p>
+                <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Nhập link nào thì nút đó sẽ hiện trên trang cá nhân.</p>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">

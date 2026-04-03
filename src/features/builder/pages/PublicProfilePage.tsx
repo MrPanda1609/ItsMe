@@ -23,13 +23,13 @@ export function PublicProfilePage() {
 
   useEffect(() => {
     if (!requestedUserId) {
-      setError('Không tìm thấy id profile để hiển thị.');
+      setError('Không tìm thấy trang cá nhân.');
       setLoading(false);
       return;
     }
 
     if (!isConfigured) {
-      setError('Chưa cấu hình Supabase nên chưa thể tải profile công khai.');
+      setError('Hệ thống chưa sẵn sàng. Vui lòng thử lại sau.');
       setLoading(false);
       return;
     }
@@ -43,7 +43,7 @@ export function PublicProfilePage() {
         if (!active) return;
 
         if (!result) {
-          setError('Không tìm thấy profile công khai cho tài khoản này.');
+          setError('Trang cá nhân này chưa được tạo hoặc chưa được công khai.');
           return;
         }
 
@@ -55,7 +55,7 @@ export function PublicProfilePage() {
       })
       .catch(() => {
         if (!active) return;
-        setError('Không thể tải profile công khai. Vui lòng kiểm tra cấu hình Supabase và schema.');
+        setError('Không thể tải trang cá nhân. Vui lòng thử lại sau.');
       })
       .finally(() => {
         if (!active) return;
@@ -94,7 +94,7 @@ export function PublicProfilePage() {
       {loading ? (
         <div className="flex min-h-[100dvh] items-center justify-center px-6 text-center text-sm text-slate-500 dark:text-slate-400">
           <div className="rounded-[28px] border border-gray-200 bg-white px-5 py-10 shadow-sm dark:border-white/10 dark:bg-[#111111]">
-            Đang tải profile công khai...
+            Đang tải...
           </div>
         </div>
       ) : error ? (

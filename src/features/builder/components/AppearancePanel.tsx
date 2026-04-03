@@ -386,7 +386,7 @@ export const AppearancePanel = memo(function AppearancePanel() {
               <ColorInputField label="Màu nền" value={profileData.backgroundColor} onChange={(value) => setProfileField('backgroundColor', value)} description="Màu nền chính của hồ sơ công khai." />
               <ColorInputField label="Màu thẻ" value={profileData.surfaceColor} onChange={(value) => setProfileField('surfaceColor', value)} description="Màu nền cho card sản phẩm và card link." />
               <ColorInputField label="Màu nhấn" value={profileData.accentColor} onChange={(value) => setProfileField('accentColor', value)} description="Màu của icon, pill và nút điều hướng." />
-              <ColorInputField label="Màu dòng 'Các bạn hãy tham khảo'" value={profileData.sectionBadgeColor} onChange={(value) => setProfileField('sectionBadgeColor', value)} description="Màu chữ của dòng nhãn nhỏ nằm trên tiêu đề phần sản phẩm." proBadge trialing={isFreeTryingPro && isAdvancedTextColorActive(profileData, 'sectionBadgeColor')} />
+              <ColorInputField label="Màu nhãn phụ" value={profileData.sectionBadgeColor} onChange={(value) => setProfileField('sectionBadgeColor', value)} description="Màu chữ của nhãn nhỏ nằm trên tiêu đề sản phẩm." proBadge trialing={isFreeTryingPro && isAdvancedTextColorActive(profileData, 'sectionBadgeColor')} />
               <ColorInputField label="Màu tên" value={profileData.nameColor} onChange={(value) => setProfileField('nameColor', value)} description="Màu cho tên hiển thị ở phần đầu profile." proBadge trialing={isFreeTryingPro && isAdvancedTextColorActive(profileData, 'nameColor')} />
               <ColorInputField label="Màu mô tả" value={profileData.bioColor} onChange={(value) => setProfileField('bioColor', value)} description="Màu cho đoạn giới thiệu bên dưới tên." proBadge trialing={isFreeTryingPro && isAdvancedTextColorActive(profileData, 'bioColor')} />
               <ColorInputField label="Màu tiêu đề phần" value={profileData.sectionTitleColor} onChange={(value) => setProfileField('sectionTitleColor', value)} description="Màu cho tiêu đề của khối sản phẩm." proBadge trialing={isFreeTryingPro && isAdvancedTextColorActive(profileData, 'sectionTitleColor')} />
@@ -402,7 +402,7 @@ export const AppearancePanel = memo(function AppearancePanel() {
             </div>
 
             <div className="grid gap-4 xl:grid-cols-2">
-              <SizeControl label="Dòng 'Các bạn hãy tham khảo'" value={profileData.sectionBadgeSize} min={10} max={18} onChange={(value) => setProfileField('sectionBadgeSize', value)} description="Cỡ chữ của dòng nhãn nhỏ nằm trên tiêu đề phần sản phẩm." />
+              <SizeControl label="Nhãn phụ" value={profileData.sectionBadgeSize} min={10} max={18} onChange={(value) => setProfileField('sectionBadgeSize', value)} description="Cỡ chữ của nhãn nhỏ nằm trên tiêu đề sản phẩm." />
               <SizeControl label="Tên hiển thị" value={profileData.displayNameSize} min={24} max={48} onChange={(value) => setProfileField('displayNameSize', value)} description="Cỡ chữ của tên hiển thị ở đầu trang." />
               <SizeControl label="Mô tả" value={profileData.bioSize} min={13} max={24} onChange={(value) => setProfileField('bioSize', value)} description="Cỡ chữ của đoạn giới thiệu ngắn." />
               <SizeControl label="Tiêu đề phần" value={profileData.sectionTitleSize} min={22} max={40} onChange={(value) => setProfileField('sectionTitleSize', value)} description="Cỡ chữ của tiêu đề khối sản phẩm." />
@@ -417,7 +417,7 @@ export const AppearancePanel = memo(function AppearancePanel() {
                 Pro
               </span>
             </div>
-            <p className="text-xs leading-5 text-slate-500 dark:text-slate-400">Hiệu ứng hoạt ảnh phủ lên profile công khai. Màu nhấn sẽ ảnh hưởng trực tiếp lên các hạt hiệu ứng.</p>
+            <p className="text-xs leading-5 text-slate-500 dark:text-slate-400">Hoạt ảnh trang trí trên trang cá nhân. Màu sẽ theo màu nhấn bạn đã chọn.</p>
             <div className="grid gap-3">
               {EFFECT_OPTIONS.map((option) => (
                 <EffectOption
@@ -435,22 +435,22 @@ export const AppearancePanel = memo(function AppearancePanel() {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Dấu ItsMe</h3>
-                <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Free có thể thử tắt trong preview, nhưng sẽ không cập nhật public nếu còn dùng tính năng Pro này.</p>
+                <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Hiển thị nhãn ItsMe ở cuối trang. Pro có thể tắt.</p>
               </div>
               <Switch checked={!mustShowWatermark} onCheckedChange={(checked) => setWatermarkEnabled(!checked)} />
             </div>
-            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">Trạng thái hiện tại: {!mustShowWatermark && isFreeTryingPro ? 'Đang thử Pro: tắt dấu ItsMe' : mustShowWatermark ? 'Đang hiển thị trên hồ sơ' : 'Đã ẩn trong bản xem thử / trang công khai'}</p>
+            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">{!mustShowWatermark && isFreeTryingPro ? 'Bạn đang thử tắt — cần Pro để áp dụng' : mustShowWatermark ? 'Đang hiển thị' : 'Đã tắt'}</p>
           </div>
 
           <div className="rounded-[28px] border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-white/[0.04]">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Popup quảng bá ItsMe</h3>
-                <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Free có thể thử tắt trong preview, nhưng sẽ không cập nhật public nếu còn dùng tính năng Pro này.</p>
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Quảng bá ItsMe</h3>
+                <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">Hiển thị giới thiệu ItsMe trên trang cá nhân. Pro có thể tắt.</p>
               </div>
               <Switch checked={brandPromoEnabled} onCheckedChange={(checked) => setProfileField('brandPromoEnabled', checked)} />
             </div>
-            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">Trạng thái hiện tại: {!brandPromoEnabled && isFreeTryingPro ? 'Đang thử Pro: tắt popup quảng bá ItsMe' : brandPromoEnabled ? 'Đang hiển thị trên trang public' : 'Đã tắt trên trang public'}</p>
+            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">{!brandPromoEnabled && isFreeTryingPro ? 'Bạn đang thử tắt — cần Pro để áp dụng' : brandPromoEnabled ? 'Đang hiển thị' : 'Đã tắt'}</p>
           </div>
         </div>
       </BuilderPanelSection>

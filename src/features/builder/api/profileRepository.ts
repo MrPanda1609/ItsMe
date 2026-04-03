@@ -31,7 +31,7 @@ const TEST_ADMIN_EMAILS = (import.meta.env.VITE_TEST_ADMIN_EMAILS ?? '')
 
 const assertSupabase = () => {
   if (!supabase) {
-    throw new Error('Supabase chưa được cấu hình. Vui lòng thêm VITE_SUPABASE_URL và VITE_SUPABASE_ANON_KEY.');
+    throw new Error('Hệ thống chưa sẵn sàng. Vui lòng liên hệ quản trị viên.');
   }
 
   return supabase;

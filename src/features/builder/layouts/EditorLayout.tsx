@@ -135,7 +135,7 @@ export function EditorLayout({ controls, preview, headerActions }: EditorLayoutP
             {preview ?? (
               <PanelFallback
                 title="Khu xem trước đã sẵn sàng"
-                description="Mockup điện thoại và khung hiển thị profile công khai sẽ hiển thị tại đây."
+                description="Xem trước trang cá nhân sẽ hiển thị tại đây."
               />
             )}
           </div>

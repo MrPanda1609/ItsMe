@@ -191,7 +191,7 @@ export function EditorPage() {
     }
 
     if (!isConfigured) {
-      setLoadError('Chưa cấu hình Supabase. Hãy thêm VITE_SUPABASE_URL và VITE_SUPABASE_ANON_KEY để dùng builder thật.');
+      setLoadError('Hệ thống chưa sẵn sàng. Vui lòng liên hệ quản trị viên.');
       setLoading(false);
       return;
     }
@@ -215,7 +215,7 @@ export function EditorPage() {
             hydrateBuilder({ ...payload, draftProfileData: localProfileData });
             draftSnapshotRef.current = localDraft.snapshot;
             setDraftSyncState('saving');
-            setDraftSyncMessage('Đang đồng bộ bản nháp chưa lưu...');
+            setDraftSyncMessage('Đang khôi phục bản chỉnh sửa trước đó...');
           } catch {
             hydrateBuilder(payload);
             draftSnapshotRef.current = serverDraftSnapshot;
@@ -233,7 +233,7 @@ export function EditorPage() {
       })
       .catch(() => {
         if (!active) return;
-        setLoadError('Không thể tải dữ liệu builder của tài khoản này. Hãy kiểm tra Supabase schema và quyền truy cập.');
+        setLoadError('Không thể tải dữ liệu tài khoản. Vui lòng thử tải lại trang.');
       })
       .finally(() => {
         if (!active) return;
@@ -309,9 +309,9 @@ export function EditorPage() {
       hydrateBuilder(payload);
       saveProfileToStore();
       draftSnapshotRef.current = JSON.stringify(payload.draftProfileData);
-      setLastSavedLabel('Đã lưu lên profile công khai');
+      setLastSavedLabel('Đã cập nhật');
     } catch {
-      setSaveError('Không thể lưu profile công khai. Vui lòng kiểm tra kết nối và schema Supabase.');
+      setSaveError('Không thể cập nhật. Vui lòng kiểm tra kết nối mạng và thử lại.');
     } finally {
       setIsSaving(false);
     }
@@ -330,7 +330,7 @@ export function EditorPage() {
       draftSnapshotRef.current = JSON.stringify(profileData);
       window.location.assign('/preview');
     } catch {
-      setSaveError('Không thể mở preview riêng tư vì draft chưa đồng bộ được.');
+      setSaveError('Không thể mở xem trước. Vui lòng thử lại.');
     } finally {
       setIsOpeningPreview(false);
     }

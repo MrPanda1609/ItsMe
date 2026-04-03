@@ -23,7 +23,7 @@ export function PrivatePreviewPage() {
     }
 
     if (!isConfigured) {
-      setError('Chưa cấu hình Supabase nên chưa thể mở preview riêng tư.');
+      setError('Hệ thống chưa sẵn sàng. Vui lòng thử lại sau.');
       setLoading(false);
       return;
     }
@@ -40,7 +40,7 @@ export function PrivatePreviewPage() {
       })
       .catch(() => {
         if (!active) return;
-        setError('Không thể tải preview riêng tư. Vui lòng kiểm tra kết nối và dữ liệu tài khoản.');
+        setError('Không thể tải xem trước. Vui lòng thử lại.');
       })
       .finally(() => {
         if (!active) return;
@@ -75,13 +75,13 @@ export function PrivatePreviewPage() {
             Quay lại chỉnh sửa
           </a>
           <span className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.24em] text-rose-700 dark:border-rose-400/30 dark:bg-rose-500/10 dark:text-rose-200">
-            Preview riêng tư
+            Xem trước
           </span>
         </div>
 
         {loading ? (
           <div className="rounded-[28px] border border-gray-200 bg-white px-5 py-10 text-center text-sm text-slate-500 shadow-sm dark:border-white/10 dark:bg-[#111111] dark:text-slate-400">
-            Đang tải preview riêng tư...
+            Đang tải xem trước...
           </div>
         ) : error ? (
           <div className="rounded-[28px] border border-rose-200 bg-white px-5 py-10 text-center text-sm text-rose-600 shadow-sm dark:border-rose-500/30 dark:bg-[#111111] dark:text-rose-200">

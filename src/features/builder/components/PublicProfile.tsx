@@ -104,8 +104,8 @@ function ProfileMediaPlaceholder({ profileData, circular = false }: { profileDat
       }}
     >
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.34em]">Ảnh nổi bật</p>
-        <p className="mt-3 text-sm leading-7">Thêm ảnh cover trong builder để profile công khai nổi bật hơn.</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.34em]">Ảnh bìa</p>
+        <p className="mt-3 text-sm leading-7">Thêm ảnh bìa để trang cá nhân nổi bật hơn.</p>
       </div>
     </div>
   );
@@ -277,7 +277,7 @@ function ProfileSection({
               Chưa có khối nội dung nào
             </p>
             <p className="mt-2 text-sm leading-6" style={{ color: profileData.mutedTextColor }}>
-              Hãy thêm link hoặc sản phẩm từ panel bên trái để hoàn thiện profile công khai của bạn.
+              Hãy thêm link hoặc sản phẩm để hoàn thiện trang cá nhân.
             </p>
           </motion.div>
         )}
